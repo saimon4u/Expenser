@@ -1,6 +1,9 @@
 package com.example.expenser.domain.model
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Dashboard
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Subscriptions
@@ -10,20 +13,20 @@ enum class NavigationItem(
     val title: String,
     val icon: ImageVector
 ) {
-    Home(
-        icon = Icons.Rounded.Home,
-        title = "Home"
+    Dashboard(
+        icon = Icons.Rounded.Dashboard,
+        title = "Dashboard"
     ),
-    Profile(
-        icon = Icons.Rounded.Person,
-        title = "Profile"
-    ),
-    Premium(
-        icon = Icons.Rounded.Subscriptions,
-        title = "Premium"
+    History(
+        icon = Icons.Rounded.History,
+        title = "Transaction History"
     ),
     Settings(
         icon = Icons.Rounded.Settings,
         title = "Settings"
-    )
+    ),
+    Sign_Out(
+        icon = Icons.Rounded.Logout,
+        title = "Sign Out"
+    ),
 }

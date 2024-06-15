@@ -1,4 +1,4 @@
-package com.example.expenser.presentation.dashboard
+package com.example.expenser.presentation
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,8 +14,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.rounded.Savings
@@ -26,31 +30,37 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.expenser.domain.model.CustomDrawerState
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.example.expenser.domain.model.NavigationItem
-import com.example.expenser.domain.model.isOpened
-import com.example.expenser.domain.model.opposite
 import com.example.expenser.presentation.components.CustomDrawer
+import com.example.expenser.presentation.components.DashboardContent
+import com.example.expenser.presentation.components.SettingsContent
+import com.example.expenser.presentation.components.TransactionHistory
+import com.example.expenser.presentation.sign_in.UserData
 import com.example.expenser.presentation.util.coloredShadow
 import kotlin.math.roundToInt
 
 @Composable
-fun Dashboard() {
-    var drawerState by remember { mutableStateOf(CustomDrawerState.Closed) }
-    var selectedNavigationItem by remember { mutableStateOf(NavigationItem.Home) }
+fun MainScreen(
+    onSignOut: () -> Unit,
+    userData: UserData?
+) {
+    val mainViewModel = hiltViewModel<MainViewModel>()
+    val drawerState = mainViewModel.drawerState.collectAsState().value
+    val selectedNavigationItem = mainViewModel.selectedNavigationItem.collectAsState().value
 
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current.density
@@ -69,7 +79,7 @@ fun Dashboard() {
     )
 
     BackHandler(enabled = drawerState.isOpened()) {
-        drawerState = CustomDrawerState.Closed
+        mainViewModel.handleBackPress()
     }
 
     Box(
@@ -82,12 +92,10 @@ fun Dashboard() {
     ) {
         CustomDrawer(
             selectedNavigationItem = selectedNavigationItem,
-            onNavigationItemClick = {
-                selectedNavigationItem = it
-            },
-            onCloseClick = { drawerState = CustomDrawerState.Closed }
+            onNavigationItemClick = mainViewModel::onNavigationItemClick,
+            onCloseClick = mainViewModel::handleBackPress
         )
-        DashboardContent(
+        Content(
             modifier = Modifier
                 .offset(x = animatedOffset)
                 .scale(scale = animatedScale)
@@ -97,7 +105,10 @@ fun Dashboard() {
                     shadowRadius = 50.dp
                 ),
             drawerState = drawerState,
-            onDrawerClick = { drawerState = it },
+            onDrawerClick = mainViewModel::onDrawerClick,
+            selectedItem = selectedNavigationItem,
+            onSignOut = onSignOut,
+            userData = userData
         )
     }
 }
@@ -105,10 +116,13 @@ fun Dashboard() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardContent(
+fun Content(
     modifier: Modifier = Modifier,
     drawerState: CustomDrawerState,
-    onDrawerClick: (CustomDrawerState) -> Unit
+    onDrawerClick: (CustomDrawerState) -> Unit,
+    selectedItem: NavigationItem,
+    onSignOut: () -> Unit,
+    userData: UserData?
 ) {
     Scaffold(
         modifier = modifier
@@ -120,15 +134,29 @@ fun DashboardContent(
                 title = {
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Savings,
-                            contentDescription = "Piggy Bank",
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(.7f),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Savings,
+                                contentDescription = "Piggy Bank",
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(text = "Expenser")
+                        }
+                        AsyncImage(
+                            model = userData?.profilePictureUrl,
+                            contentDescription = "Profile Picture",
+                            modifier = Modifier
+                                .size(30.dp)
+                                .clip(CircleShape)
                         )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Text(text = "Expenser")
                     }
                 },
                 navigationIcon = {
@@ -146,11 +174,12 @@ fun DashboardContent(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "Home",
-                fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                fontWeight = FontWeight.Medium
-            )
+            when(selectedItem){
+                NavigationItem.Dashboard -> DashboardContent()
+                NavigationItem.History -> TransactionHistory()
+                NavigationItem.Settings -> SettingsContent()
+                NavigationItem.Sign_Out -> onSignOut()
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.expenser.domain.model
+package com.example.expenser.presentation
 
 enum class CustomDrawerState {
     Opened,

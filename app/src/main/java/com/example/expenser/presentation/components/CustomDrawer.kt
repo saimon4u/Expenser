@@ -68,8 +68,8 @@ fun CustomDrawer(
                 selected = false,
                 onClick = {
                     when (navigationItem) {
-                        NavigationItem.Settings -> {
-                            onNavigationItemClick(NavigationItem.Settings)
+                        NavigationItem.Sign_Out -> {
+                            onNavigationItemClick(NavigationItem.Sign_Out)
                         }
 
                         else -> {}

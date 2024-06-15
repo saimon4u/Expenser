@@ -19,7 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.expenser.presentation.dashboard.Dashboard
+import com.example.expenser.presentation.MainScreen
 import com.example.expenser.presentation.sign_in.GoogleAuthClient
 import com.example.expenser.presentation.sign_in.SignInScreen
 import com.example.expenser.presentation.sign_in.SignInViewModel
@@ -113,18 +113,16 @@ class MainActivity : ComponentActivity() {
                         composable(
                             route = "profile_route"
                         ){
-//                            ProfileScreen(
-//                                userData = googleAuthUiClient.getSignedInUser(),
-//                                onSignOut = {
-//                                    lifecycleScope.launch {
-//                                        googleAuthUiClient.signOut()
-//                                        Toast.makeText(applicationContext, "Signed Out", Toast.LENGTH_SHORT).show()
-//                                        navController.popBackStack()
-//                                    }
-//                                },
-//                                onAdd = signInViewModel::onAdd
-//                            )
-                            Dashboard()
+                            MainScreen(
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                onSignOut = {
+                                    lifecycleScope.launch {
+                                        googleAuthUiClient.signOut()
+                                        Toast.makeText(applicationContext, "Signed Out", Toast.LENGTH_SHORT).show()
+                                        navController.popBackStack()
+                                    }
+                                }
+                            )
                         }
                     }
                 }
