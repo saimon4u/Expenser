@@ -13,10 +13,7 @@ import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
 
-@HiltViewModel
-class SignInViewModel @Inject constructor(
-    private val repository: Repository
-): ViewModel()
+class SignInViewModel: ViewModel()
 {
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()
@@ -34,22 +31,4 @@ class SignInViewModel @Inject constructor(
     fun resetState(){
         _state.update { SignInState() }
     }
-
-    fun onAdd(){
-        viewModelScope.launch {
-            repository.addTransaction(
-                Transaction(
-                    transactionId = "",
-                    createdAt = System.currentTimeMillis(),
-                    amount = 200.5,
-                    date = Date(),
-                    userId = "Saimon",
-                    type = "income",
-                    category = "nai",
-                    categoryIcon = "nai"
-                )
-            )
-        }
-    }
-
 }

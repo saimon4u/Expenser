@@ -4,14 +4,17 @@ import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -21,7 +24,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.rounded.Savings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,12 +43,14 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.expenser.R
 import com.example.expenser.domain.model.NavigationItem
 import com.example.expenser.presentation.components.CustomDrawer
-import com.example.expenser.presentation.components.DashboardContent
+import com.example.expenser.presentation.dashboard.DashboardContent
 import com.example.expenser.presentation.components.SettingsContent
 import com.example.expenser.presentation.components.TransactionHistory
 import com.example.expenser.presentation.sign_in.UserData
@@ -58,7 +62,7 @@ fun MainScreen(
     onSignOut: () -> Unit,
     userData: UserData?
 ) {
-    val mainViewModel = hiltViewModel<MainViewModel>()
+    val mainViewModel = viewModel<MainViewModel>()
     val drawerState = mainViewModel.drawerState.collectAsState().value
     val selectedNavigationItem = mainViewModel.selectedNavigationItem.collectAsState().value
 
@@ -85,7 +89,6 @@ fun MainScreen(
     Box(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.surface)
-            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
             .statusBarsPadding()
             .navigationBarsPadding()
             .fillMaxSize()
@@ -143,12 +146,18 @@ fun Content(
                             modifier = Modifier
                                 .fillMaxWidth(.7f),
                         ) {
-                            Icon(
-                                imageVector = Icons.Rounded.Savings,
-                                contentDescription = "Piggy Bank",
+                            Image(
+                                painter = painterResource(id = R.drawable.app_icon),
+                                contentDescription = "App Icon",
+                                modifier = Modifier
+                                    .size(25.dp)
+                                    .clip(CircleShape)
                             )
                             Spacer(modifier = Modifier.width(16.dp))
-                            Text(text = "Expenser")
+                            Text(
+                                text = "Expenser",
+                                style = MaterialTheme.typography.headlineLarge
+                            )
                         }
                         AsyncImage(
                             model = userData?.profilePictureUrl,
@@ -166,16 +175,20 @@ fun Content(
                             contentDescription = "Menu Icon"
                         )
                     }
-                }
+                },
             )
         }
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface),
         ) {
+            Spacer(modifier = Modifier.height(70.dp))
             when(selectedItem){
-                NavigationItem.Dashboard -> DashboardContent()
+                NavigationItem.Dashboard -> DashboardContent(
+                    userName = userData?.userName ?: "User",
+                )
                 NavigationItem.History -> TransactionHistory()
                 NavigationItem.Settings -> SettingsContent()
                 NavigationItem.Sign_Out -> onSignOut()

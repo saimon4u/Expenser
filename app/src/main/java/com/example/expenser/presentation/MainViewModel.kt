@@ -9,10 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
-@HiltViewModel
-class MainViewModel @Inject constructor(
-    private val repository: Repository
-): ViewModel() {
+class MainViewModel: ViewModel() {
 
     private var _drawerState = MutableStateFlow(CustomDrawerState.Closed)
     var drawerState = _drawerState.asStateFlow()

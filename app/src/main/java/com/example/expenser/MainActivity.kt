@@ -12,10 +12,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -23,6 +27,7 @@ import com.example.expenser.presentation.MainScreen
 import com.example.expenser.presentation.sign_in.GoogleAuthClient
 import com.example.expenser.presentation.sign_in.SignInScreen
 import com.example.expenser.presentation.sign_in.SignInViewModel
+import com.example.expenser.presentation.util.NavRoute
 import com.example.expenser.ui.theme.ExpenserTheme
 import com.google.android.gms.auth.api.identity.Identity
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,24 +52,26 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    val signInViewModel = hiltViewModel<SignInViewModel>()
+                    val signInViewModel = viewModel<SignInViewModel>()
                     val state by signInViewModel.state.collectAsStateWithLifecycle()
+
+                    LaunchedEffect(
+                        key1 = Unit
+                    ) {
+                        if(googleAuthUiClient.getSignedInUser() != null){
+                            navController.navigate(NavRoute.Dashboard.route)
+                        } else{
+                            navController.navigate(NavRoute.SIGN_IN.route)
+                        }
+                    }
+
                     NavHost(
                         navController = navController,
-                        startDestination = "sign_in_route"
+                        startDestination = NavRoute.SIGN_IN.route
                     ){
                         composable(
-                            route = "sign_in_route"
+                            route = NavRoute.SIGN_IN.route
                         ){
-
-
-                            LaunchedEffect(
-                                key1 = Unit
-                            ) {
-                                if(googleAuthUiClient.getSignedInUser() != null){
-                                    navController.navigate("profile_route")
-                                }
-                            }
 
                             val launcher = rememberLauncherForActivityResult(
                                 contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -74,7 +81,6 @@ class MainActivity : ComponentActivity() {
                                             val signInResult = googleAuthUiClient.signInWithIntent(
                                                 intent = result.data ?: return@launch
                                             )
-
                                             signInViewModel.onSignInResult(signInResult)
                                         }
                                     }
@@ -87,8 +93,8 @@ class MainActivity : ComponentActivity() {
 
                                 if(state.isSignInSuccessful){
                                     Toast.makeText(applicationContext, "Sign In Successful", Toast.LENGTH_SHORT).show()
-
-                                    navController.navigate("profile_route")
+                                    navController.popBackStack()
+                                    navController.navigate(NavRoute.Dashboard.route)
                                     signInViewModel.resetState()
                                 }
 
@@ -111,7 +117,7 @@ class MainActivity : ComponentActivity() {
 
 
                         composable(
-                            route = "profile_route"
+                            route = NavRoute.Dashboard.route
                         ){
                             MainScreen(
                                 userData = googleAuthUiClient.getSignedInUser(),
@@ -120,6 +126,7 @@ class MainActivity : ComponentActivity() {
                                         googleAuthUiClient.signOut()
                                         Toast.makeText(applicationContext, "Signed Out", Toast.LENGTH_SHORT).show()
                                         navController.popBackStack()
+                                        navController.navigate(NavRoute.SIGN_IN.route)
                                     }
                                 }
                             )

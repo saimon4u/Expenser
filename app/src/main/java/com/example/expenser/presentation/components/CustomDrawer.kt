@@ -17,7 +17,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.expenser.R
 import com.example.expenser.domain.model.NavigationItem
 
 @Composable
@@ -30,7 +32,7 @@ fun CustomDrawer(
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth(fraction = 0.6f)
-            .padding(horizontal = 12.dp),
+            .padding(end = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
@@ -49,8 +51,8 @@ fun CustomDrawer(
         Spacer(modifier = Modifier.height(24.dp))
         Image(
             modifier = Modifier.size(100.dp),
-            imageVector = Icons.Rounded.Apps,
-            contentDescription = "Zodiac Image"
+            painter = painterResource(id = R.drawable.app_icon),
+            contentDescription = "App Icon"
         )
         Spacer(modifier = Modifier.height(40.dp))
         NavigationItem.entries.toTypedArray().take(3).forEach { navigationItem ->

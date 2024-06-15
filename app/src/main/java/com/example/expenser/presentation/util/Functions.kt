@@ -9,6 +9,9 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @SuppressLint("UnnecessaryComposedModifier")
 fun Modifier.coloredShadow(
@@ -43,4 +46,16 @@ fun Modifier.coloredShadow(
             )
         }
     }
+}
+
+
+fun Long.convertMillisToDate(): String {
+    val calendar = Calendar.getInstance().apply {
+        timeInMillis = this@convertMillisToDate
+        val zoneOffset = get(Calendar.ZONE_OFFSET)
+        val dstOffset = get(Calendar.DST_OFFSET)
+        add(Calendar.MILLISECOND, -(zoneOffset + dstOffset))
+    }
+    val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.US)
+    return sdf.format(calendar.time)
 }
