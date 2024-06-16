@@ -1,4 +1,4 @@
-package com.example.expenser.presentation.util
+package com.example.expenser.util
 
 
 enum class NavRoute(

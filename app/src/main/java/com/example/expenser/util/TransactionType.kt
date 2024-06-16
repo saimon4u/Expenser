@@ -1,4 +1,4 @@
-package com.example.expenser.domain.model
+package com.example.expenser.util
 
 enum class TransactionType(
     val type: String,

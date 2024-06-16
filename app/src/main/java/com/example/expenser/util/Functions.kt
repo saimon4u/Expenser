@@ -1,5 +1,6 @@
-package com.example.expenser.presentation.util
+package com.example.expenser.util
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawBehind
@@ -9,6 +10,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.expenser.domain.model.Category
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -58,4 +60,18 @@ fun Long.convertMillisToDate(): String {
     }
     val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.US)
     return sdf.format(calendar.time)
+}
+
+
+fun debug(message: String){
+    Log.d("debug", message)
+}
+
+
+fun validateCategoryName(name: String, list: List<Category>): CreateCategoryError?{
+    if(name.isBlank()) return CreateCategoryError.ValidationError
+    if(name.contains(regex = Regex("[0-9]"))) return CreateCategoryError.ContainNumberError
+    if(name.length > 10) return CreateCategoryError.ValidationError
+    if(list.map { it.name }.contains(name)) return CreateCategoryError.DuplicateError(name)
+    return null
 }

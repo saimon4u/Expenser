@@ -50,11 +50,11 @@ import coil.compose.AsyncImage
 import com.example.expenser.R
 import com.example.expenser.domain.model.NavigationItem
 import com.example.expenser.presentation.components.CustomDrawer
-import com.example.expenser.presentation.dashboard.DashboardContent
 import com.example.expenser.presentation.components.SettingsContent
 import com.example.expenser.presentation.components.TransactionHistory
+import com.example.expenser.presentation.dashboard.Dashboard
 import com.example.expenser.presentation.sign_in.UserData
-import com.example.expenser.presentation.util.coloredShadow
+import com.example.expenser.util.coloredShadow
 import kotlin.math.roundToInt
 
 @Composable
@@ -186,8 +186,8 @@ fun Content(
         ) {
             Spacer(modifier = Modifier.height(70.dp))
             when(selectedItem){
-                NavigationItem.Dashboard -> DashboardContent(
-                    userName = userData?.userName ?: "User",
+                NavigationItem.Dashboard -> Dashboard(
+                    userData = userData
                 )
                 NavigationItem.History -> TransactionHistory()
                 NavigationItem.Settings -> SettingsContent()

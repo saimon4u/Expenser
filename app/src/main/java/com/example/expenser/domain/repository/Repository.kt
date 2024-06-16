@@ -1,7 +1,13 @@
 package com.example.expenser.domain.repository
 
+import com.example.expenser.domain.model.Category
 import com.example.expenser.domain.model.Transaction
+import com.example.expenser.util.Resource
+import com.example.expenser.util.TransactionType
+import kotlinx.coroutines.flow.Flow
 
 interface Repository {
     suspend fun addTransaction(transaction: Transaction)
+    suspend fun addCategory(category: Category)
+    suspend fun getAllCategory(userId: String, type: TransactionType): Flow<Resource<List<Category>>>
 }

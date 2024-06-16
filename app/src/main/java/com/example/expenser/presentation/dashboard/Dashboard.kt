@@ -1,24 +1,17 @@
 package com.example.expenser.presentation.dashboard
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.SportsBaseball
 import androidx.compose.material.icons.rounded.AddCircleOutline
-import androidx.compose.material.icons.rounded.Money
-import androidx.compose.material.icons.rounded.SportsBaseball
 import androidx.compose.material.icons.rounded.WavingHand
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,7 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,40 +28,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.expenser.domain.model.TransactionType
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.expenser.util.TransactionType
 import com.example.expenser.presentation.components.TransactionDialog
+import com.example.expenser.presentation.sign_in.UserData
 import com.example.expenser.ui.theme.Emerald500
 import com.example.expenser.ui.theme.Red500
 import com.example.expenser.ui.theme.fonts
 
 @Composable
-fun DashboardContent(
-    userName: String,
-    modifier: Modifier = Modifier
+fun Dashboard(
+    modifier: Modifier = Modifier,
+    userData: UserData?
 ){
 
+    val dashboardViewModel = hiltViewModel<DashboardViewModel>()
+    val dashboardState = dashboardViewModel.dashboardState.collectAsState().value
 
     val openAlertDialog = remember { mutableStateOf(false) }
 
-    when {
-        openAlertDialog.value -> {
-//            TransactionDialog(
-//                onDismissRequest = { openAlertDialog.value = false },
-//                onConfirmation = {
-//                    openAlertDialog.value = false
-//                    println("Confirmation registered")
-//                },
-//                dialogTitle = "Alert dialog example",
-//                dialogText = "This is an example of an alert dialog with buttons.",
-//                icon = Icons.Default.SportsBaseball
-//            )
-            TransactionDialog(
-                transactionType = TransactionType.Income,
-                onDismissRequest = {
-                    openAlertDialog.value = false
-                }
-            )
-        }
+    if(openAlertDialog.value){
+        TransactionDialog(
+            transactionType = TransactionType.Income,
+            onDismissRequest = {
+                openAlertDialog.value = false
+            },
+            onCategoryCreate = dashboardViewModel::onCategoryCreate,
+            dashboardState = dashboardState,
+            getAllCategories = dashboardViewModel::getAllCategories
+        )
     }
 
     Column(
@@ -81,7 +69,7 @@ fun DashboardContent(
                 .fillMaxWidth(),
         ){
             Text(
-                text = ("Hello $userName!"),
+                text = ("Hello ${userData?.userName ?: "User"}!"),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )

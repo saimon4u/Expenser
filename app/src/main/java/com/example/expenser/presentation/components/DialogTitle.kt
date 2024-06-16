@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.example.expenser.domain.model.TransactionType
+import com.example.expenser.util.TransactionType
 import com.example.expenser.ui.theme.Emerald500
 import com.example.expenser.ui.theme.Red500
 import com.example.expenser.ui.theme.fonts
@@ -17,7 +17,8 @@ import com.example.expenser.ui.theme.fonts
 @Composable
 fun DialogTitle(
     modifier: Modifier = Modifier,
-    transactionType: TransactionType
+    transactionType: TransactionType,
+    valueType: String
 ){
     Row (
         modifier = modifier
@@ -39,7 +40,7 @@ fun DialogTitle(
             color = if(transactionType == TransactionType.Income) Emerald500 else Red500
         )
         Text(
-            text = " transaction",
+            text = valueType,
             fontFamily = fonts,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
