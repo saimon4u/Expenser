@@ -17,11 +17,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,6 +39,7 @@ import com.example.expenser.ui.theme.Emerald500
 import com.example.expenser.ui.theme.Red500
 import com.example.expenser.ui.theme.fonts
 
+
 @Composable
 fun Dashboard(
     modifier: Modifier = Modifier,
@@ -45,17 +49,19 @@ fun Dashboard(
     val dashboardViewModel = hiltViewModel<DashboardViewModel>()
     val dashboardState = dashboardViewModel.dashboardState.collectAsState().value
 
-    val openAlertDialog = remember { mutableStateOf(false) }
+    val openTransactionDialog = remember { mutableStateOf(false) }
+    val selectedTransactionType = remember { mutableStateOf(TransactionType.Income) }
 
-    if(openAlertDialog.value){
+    if(openTransactionDialog.value){
         TransactionDialog(
-            transactionType = TransactionType.Income,
+            transactionType = selectedTransactionType.value,
             onDismissRequest = {
-                openAlertDialog.value = false
+                openTransactionDialog.value = false
             },
             onCategoryCreate = dashboardViewModel::onCategoryCreate,
             dashboardState = dashboardState,
-            getAllCategories = dashboardViewModel::getAllCategories
+            getAllCategories = dashboardViewModel::getAllCategories,
+            onCreateTransaction = dashboardViewModel::onTransactionCreate
         )
     }
 
@@ -90,11 +96,14 @@ fun Dashboard(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(
-                onClick = { openAlertDialog.value = true },
                 shape = RoundedCornerShape(5.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Emerald500
-                )
+                ),
+                onClick = {
+                    openTransactionDialog.value = true
+                    selectedTransactionType.value = TransactionType.Income
+                }
             ) {
                 Row (
                     horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -117,11 +126,14 @@ fun Dashboard(
                 }
             }
             Button(
-                onClick = { /*TODO*/ },
                 shape = RoundedCornerShape(5.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Red500
                 ),
+                onClick = {
+                    openTransactionDialog.value = true
+                    selectedTransactionType.value = TransactionType.Expense
+                }
             ) {
                 Row (
                     horizontalArrangement = Arrangement.spacedBy(5.dp),

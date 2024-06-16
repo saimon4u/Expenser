@@ -11,8 +11,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.expenser.domain.model.Category
+import com.example.expenser.domain.model.Transaction
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 @SuppressLint("UnnecessaryComposedModifier")
@@ -68,10 +70,17 @@ fun debug(message: String){
 }
 
 
-fun validateCategoryName(name: String, list: List<Category>): CreateCategoryError?{
-    if(name.isBlank()) return CreateCategoryError.ValidationError
-    if(name.contains(regex = Regex("[0-9]"))) return CreateCategoryError.ContainNumberError
-    if(name.length > 10) return CreateCategoryError.ValidationError
-    if(list.map { it.name }.contains(name)) return CreateCategoryError.DuplicateError(name)
+fun validateCategoryName(name: String, list: List<Category>): CreateCategoryErrors?{
+    if(name.isBlank()) return CreateCategoryErrors.ValidationError
+    if(name.contains(regex = Regex("[0-9]"))) return CreateCategoryErrors.ContainNumberError
+    if(name.length > 10) return CreateCategoryErrors.ValidationError
+    if(list.map { it.name }.contains(name)) return CreateCategoryErrors.DuplicateError(name)
+    return null
+}
+
+fun validateTransaction(amount: Double, category: String, date: String): CreateTransactionErrors?{
+    if(amount == 0.0) return CreateTransactionErrors.AmountError
+    if(category == "Category") return CreateTransactionErrors.CategorySelectError
+    if(date == "Select Date") return CreateTransactionErrors.DateError
     return null
 }

@@ -32,6 +32,7 @@ class RepositoryImpl @Inject constructor(
         return flow {
 
             val categoryList = mutableListOf<Category>()
+            var result = false
             emit(Resource.Loading(true))
 
             database.collection(DatabasePath.Category.path)
@@ -44,15 +45,15 @@ class RepositoryImpl @Inject constructor(
                         val category = document.toObject(Category::class.java)
                         categoryList.add(category)
                     }
-                    debug("in add on success listener ${categoryList.size}")
+                    result = true
                 }
                 .addOnFailureListener {
-                    debug("category fetching failed")
+                    result = false
                 }
                 .await()
-
             emit(Resource.Loading(false))
-            emit(Resource.Success(categoryList))
+            if (result) emit(Resource.Success(categoryList))
+            else emit(Resource.Error(message = "Error Fetching data"))
         }
     }
 }

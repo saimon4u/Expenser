@@ -36,11 +36,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.expenser.domain.model.Category
+import com.example.expenser.domain.model.Transaction
 import com.example.expenser.util.TransactionType
 import com.example.expenser.presentation.dashboard.DashboardState
 import com.example.expenser.util.convertMillisToDate
 import com.example.expenser.ui.theme.Emerald500
 import com.example.expenser.ui.theme.fonts
+import com.example.expenser.util.CreateCategoryErrors
+import com.example.expenser.util.CreateTransactionErrors
+import com.example.expenser.util.debug
+import com.example.expenser.util.validateCategoryName
+import com.example.expenser.util.validateTransaction
+import java.util.Date
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,7 +57,8 @@ fun TransactionDialog(
     onDismissRequest: () -> Unit,
     onCategoryCreate: (Category) -> Unit,
     dashboardState: DashboardState,
-    getAllCategories: (String, TransactionType) -> Unit
+    getAllCategories: (String, TransactionType) -> Unit,
+    onCreateTransaction: (Transaction) -> Unit
 ) {
 
 
@@ -62,10 +70,11 @@ fun TransactionDialog(
 
     val selectedCategoryName = remember {
         mutableStateOf(
-            if(dashboardState.categoryList.isNotEmpty()) dashboardState.categoryList[0].name
-            else "Category"
+            "Category"
         )
     }
+
+    var validationError by remember { mutableStateOf<CreateTransactionErrors?>(null) }
 
 
 
@@ -78,6 +87,7 @@ fun TransactionDialog(
             onConfirm = {
                 openDateDialog = false
                 dateButtonText = datePickerState.selectedDateMillis?.convertMillisToDate() ?: ""
+                if(validationError == CreateTransactionErrors.DateError) validationError = null
             },
             datePickerState = datePickerState
         )
@@ -117,12 +127,15 @@ fun TransactionDialog(
             FormTextField(
                 text = if(amountVal == 0.0) "" else amountVal.toString(),
                 onValueChange = {
+                    if(validationError == CreateTransactionErrors.AmountError) validationError = null
                     amountVal = it.toDouble()
                 },
                 label = "Amount",
                 placeholder = "Enter amount",
                 maxLines = 1,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                validationError = validationError != null,
+                errorMessage = if(validationError == CreateTransactionErrors.AmountError) "Amount can't be 0" else ""
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -136,7 +149,7 @@ fun TransactionDialog(
                     onClick = { openDateDialog = true },
                     shape = RoundedCornerShape(5.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary
+                        containerColor = MaterialTheme.colorScheme.tertiary,
                     )
                 ) {
                     Icon(
@@ -150,33 +163,54 @@ fun TransactionDialog(
                         fontFamily = fonts,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onTertiary
+                        color = if(validationError == CreateTransactionErrors.DateError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onTertiary
                     )
                 }
 
 
                 CategoryDropDown(
                     selectedValue = selectedCategoryName.value,
+                    selectedValueColor = if(validationError == CreateTransactionErrors.CategorySelectError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSecondary,
                     onValueChangedEvent = {
+                        if(validationError == CreateTransactionErrors.CategorySelectError) validationError = null
                         selectedCategoryName.value = it
                     },
                     dashboardState = dashboardState,
                     onCategoryCreate = onCategoryCreate,
                     transactionType = transactionType,
-                    getAllCategories = getAllCategories
+                    getAllCategories = getAllCategories,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 
             Spacer(modifier = Modifier.height(10.dp))
 
             Button(
-                onClick = { TODO() },
                 shape = RoundedCornerShape(5.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Emerald500
                 ),
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                onClick = {
+                    validationError = validateTransaction(amountVal, selectedCategoryName.value, dateButtonText)
+                    if(validationError == null){
+                        onCreateTransaction(
+                            Transaction(
+                                createdAt = System.currentTimeMillis(),
+                                amount = amountVal,
+                                description = descriptionVal,
+                                date = Date(datePickerState.selectedDateMillis!!),
+                                userId = dashboardState.userData!!.userId,
+                                type = transactionType.type,
+                                category = selectedCategoryName.value
+                            )
+                        )
+                        selectedCategoryName.value = ""
+                        dateButtonText = "Select Date"
+                        onDismissRequest()
+                    }
+                }
             ) {
                 Text(
                     text = "Create",

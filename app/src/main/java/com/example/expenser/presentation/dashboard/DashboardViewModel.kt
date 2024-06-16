@@ -3,10 +3,12 @@ package com.example.expenser.presentation.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expenser.domain.model.Category
+import com.example.expenser.domain.model.Transaction
 import com.example.expenser.domain.repository.Repository
 import com.example.expenser.util.Resource
 import com.example.expenser.presentation.sign_in.GoogleAuthClient
 import com.example.expenser.util.TransactionType
+import com.example.expenser.util.debug
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -52,7 +54,11 @@ class DashboardViewModel @Inject constructor(
                 when(result){
                     is Resource.Error -> TODO()
                     is Resource.Loading -> {
-
+                        _dashboardState.update {
+                            it.copy(
+                                isLoading = result.isLoading
+                            )
+                        }
                     }
                     is Resource.Success -> {
                         _dashboardState.update {
@@ -63,6 +69,12 @@ class DashboardViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun onTransactionCreate(transaction: Transaction){
+        viewModelScope.launch {
+            repository.addTransaction(transaction)
         }
     }
 

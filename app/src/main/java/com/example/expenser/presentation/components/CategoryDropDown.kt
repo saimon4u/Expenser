@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddCircleOutline
 import androidx.compose.material.icons.rounded.ArrowDropDown
+import androidx.compose.material.icons.rounded.Downloading
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -30,24 +31,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.expenser.domain.model.Category
 import com.example.expenser.util.TransactionType
 import com.example.expenser.presentation.dashboard.DashboardState
-import com.example.expenser.util.CreateCategoryError
+import com.example.expenser.util.CreateCategoryErrors
 import com.example.expenser.util.validateCategoryName
 import com.example.expenser.ui.theme.fonts
+import com.example.expenser.util.debug
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryDropDown(
     selectedValue: String,
+    selectedValueColor: Color,
     onValueChangedEvent: (String) -> Unit,
     modifier: Modifier = Modifier,
     onCategoryCreate: (Category) -> Unit,
@@ -58,7 +64,7 @@ fun CategoryDropDown(
     var expanded by remember { mutableStateOf(false) }
     var categoryTextBoxOpen by remember { mutableStateOf(false) }
     var categoryNameVal by remember { mutableStateOf("") }
-    var validationError by remember { mutableStateOf<CreateCategoryError?>(null) }
+    var validationError by remember { mutableStateOf<CreateCategoryErrors?>(null) }
 
     if(categoryTextBoxOpen){
         Dialog(
@@ -93,9 +99,9 @@ fun CategoryDropDown(
                         label = "Category Name",
                         validationError = validationError != null,
                         errorMessage = when(validationError){
-                            is CreateCategoryError.ValidationError -> "Limit: ${categoryNameVal.length}/10"
-                            is CreateCategoryError.DuplicateError -> "category already exist"
-                            CreateCategoryError.ContainNumberError -> "category can't contain number"
+                            is CreateCategoryErrors.ValidationError -> "Limit: ${categoryNameVal.length}/10"
+                            is CreateCategoryErrors.DuplicateError -> "category already exist"
+                            is CreateCategoryErrors.ContainNumberError -> "category can't contain number"
                             null -> ""
                         }
                     )
@@ -140,7 +146,6 @@ fun CategoryDropDown(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
-        modifier = modifier
     ) {
         OutlinedButton(
             onClick = {
@@ -151,7 +156,7 @@ fun CategoryDropDown(
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondary
             ),
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth(.9f)
                 .menuAnchor()
         ) {
@@ -160,7 +165,7 @@ fun CategoryDropDown(
                 fontFamily = fonts,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSecondary
+                color = selectedValueColor
             )
             Spacer(modifier = Modifier.width(5.dp))
             Icon(
@@ -170,7 +175,10 @@ fun CategoryDropDown(
             )
         }
 
-        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
             DropdownMenuItem(
                 leadingIcon = {
                     Icon(
@@ -183,10 +191,49 @@ fun CategoryDropDown(
                 },
                 onClick = { categoryTextBoxOpen = true }
             )
-            Log.e("TAG", dashboardState.categoryList.size.toString() )
+
+            if(dashboardState.categoryList.isEmpty()){
+                DropdownMenuItem(
+                    text = {
+                        Box (
+                            modifier = modifier
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ){
+                            Text(
+                                text = "No Category",
+                                fontFamily = fonts,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Light,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    },
+                    onClick = {
+                        debug("Create Category")
+                    }
+                )
+            }
+
             dashboardState.categoryList.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(text = option.name) },
+                    text = {
+                        Box(
+                            modifier = modifier
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ){
+                            Text(
+                                text = option.name,
+                                fontFamily = fonts,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Light,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    },
                     onClick = {
                         expanded = false
                         onValueChangedEvent(option.name)
