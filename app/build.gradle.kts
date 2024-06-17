@@ -91,4 +91,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     implementation("androidx.compose.material:material-icons-extended:1.6.8")
+
+    api("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
 }
