@@ -186,7 +186,7 @@ fun Content(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surface),
         ) {
-            Spacer(modifier = Modifier.height(70.dp))
+            Spacer(modifier = Modifier.height(60.dp))
             when(selectedItem){
                 NavigationItem.Dashboard -> Dashboard(
                     userData = userData

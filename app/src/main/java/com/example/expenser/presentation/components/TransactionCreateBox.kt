@@ -2,8 +2,10 @@ package com.example.expenser.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddCircleOutline
@@ -37,7 +39,9 @@ fun TransactionCreateBox(
             colors = ButtonDefaults.buttonColors(
                 containerColor = Emerald500
             ),
-            onClick = onIncomeClick
+            onClick = onIncomeClick,
+            modifier = Modifier
+                .weight(1f)
         ) {
             Row (
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -59,12 +63,15 @@ fun TransactionCreateBox(
                 )
             }
         }
+        Spacer(modifier = Modifier.width(10.dp))
         Button(
             shape = RoundedCornerShape(5.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Red500
             ),
-            onClick = onExpenseClick
+            onClick = onExpenseClick,
+            modifier = Modifier
+                .weight(1f)
         ) {
             Row (
                 horizontalArrangement = Arrangement.spacedBy(5.dp),

@@ -9,12 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AddCircleOutline
 import androidx.compose.material.icons.rounded.WavingHand
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -27,21 +23,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.expenser.presentation.components.CustomSnackbar
+import com.example.expenser.presentation.components.Overview
 import com.example.expenser.presentation.components.TransactionCreateBox
 import com.example.expenser.util.TransactionType
 import com.example.expenser.presentation.components.TransactionDialog
 import com.example.expenser.presentation.sign_in.UserData
-import com.example.expenser.ui.theme.Emerald500
-import com.example.expenser.ui.theme.Red500
-import com.example.expenser.ui.theme.fonts
 import kotlinx.coroutines.launch
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
@@ -114,7 +105,9 @@ fun Dashboard(
         ) {
             Row (
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
+                horizontalArrangement = Arrangement.Center
             ){
                 Text(
                     text = ("Hello ${userData?.userName ?: "User"}!"),
@@ -141,6 +134,13 @@ fun Dashboard(
                     openTransactionDialog.value = true
                     selectedTransactionType.value = TransactionType.Expense
                 }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Overview(
+                modifier = Modifier
+                    .fillMaxWidth()
             )
         }
         SwipeableActionsBox(
