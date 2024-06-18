@@ -1,5 +1,8 @@
 package com.example.expenser.presentation.dashboard
 
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expenser.domain.model.Category
@@ -75,6 +78,24 @@ class DashboardViewModel @Inject constructor(
     fun onTransactionCreate(transaction: Transaction){
         viewModelScope.launch {
             repository.addTransaction(transaction)
+        }
+    }
+
+
+    fun showSnackbar(message: String){
+        _dashboardState.update {
+            it.copy(
+                showSnackbar = true,
+                snackbarMessage = message
+            )
+        }
+    }
+
+    fun updateSnackbarState(){
+        _dashboardState.update {
+            it.copy(
+                showSnackbar = false,
+            )
         }
     }
 

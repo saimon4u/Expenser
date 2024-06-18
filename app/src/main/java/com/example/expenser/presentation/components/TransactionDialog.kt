@@ -19,6 +19,7 @@ import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -47,6 +48,7 @@ import com.example.expenser.util.CreateTransactionErrors
 import com.example.expenser.util.debug
 import com.example.expenser.util.validateCategoryName
 import com.example.expenser.util.validateTransaction
+import java.lang.Exception
 import java.util.Date
 
 
@@ -58,7 +60,8 @@ fun TransactionDialog(
     onCategoryCreate: (Category) -> Unit,
     dashboardState: DashboardState,
     getAllCategories: (String, TransactionType) -> Unit,
-    onCreateTransaction: (Transaction) -> Unit
+    onCreateTransaction: (Transaction) -> Unit,
+    showSnackbar: (String) -> Unit
 ) {
 
 
@@ -75,7 +78,6 @@ fun TransactionDialog(
     }
 
     var validationError by remember { mutableStateOf<CreateTransactionErrors?>(null) }
-
 
 
 
@@ -128,14 +130,18 @@ fun TransactionDialog(
                 text = if(amountVal == 0.0) "" else amountVal.toString(),
                 onValueChange = {
                     if(validationError == CreateTransactionErrors.AmountError) validationError = null
-                    amountVal = it.toDouble()
+                    amountVal = try {
+                        it.toDouble()
+                    }catch (e: Exception){
+                        0.0
+                    }
                 },
                 label = "Amount",
                 placeholder = "Enter amount",
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                validationError = validationError != null,
-                errorMessage = if(validationError == CreateTransactionErrors.AmountError) "Amount can't be 0" else ""
+//                validationError = validationError != null,
+//                errorMessage = if(validationError == CreateTransactionErrors.AmountError) "Amount can't be 0" else ""
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -163,14 +169,16 @@ fun TransactionDialog(
                         fontFamily = fonts,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = if(validationError == CreateTransactionErrors.DateError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onTertiary
+//                        color = if(validationError == CreateTransactionErrors.DateError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onTertiary
+                        color = MaterialTheme.colorScheme.onTertiary
                     )
                 }
 
 
                 CategoryDropDown(
                     selectedValue = selectedCategoryName.value,
-                    selectedValueColor = if(validationError == CreateTransactionErrors.CategorySelectError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSecondary,
+//                    selectedValueColor = if(validationError == CreateTransactionErrors.CategorySelectError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSecondary,
+                    selectedValueColor = MaterialTheme.colorScheme.onSecondary,
                     onValueChangedEvent = {
                         if(validationError == CreateTransactionErrors.CategorySelectError) validationError = null
                         selectedCategoryName.value = it
@@ -179,7 +187,8 @@ fun TransactionDialog(
                     onCategoryCreate = onCategoryCreate,
                     transactionType = transactionType,
                     getAllCategories = getAllCategories,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    showSnackbar = showSnackbar
                 )
             }
 
@@ -194,21 +203,28 @@ fun TransactionDialog(
                     .fillMaxWidth(),
                 onClick = {
                     validationError = validateTransaction(amountVal, selectedCategoryName.value, dateButtonText)
-                    if(validationError == null){
-                        onCreateTransaction(
-                            Transaction(
-                                createdAt = System.currentTimeMillis(),
-                                amount = amountVal,
-                                description = descriptionVal,
-                                date = Date(datePickerState.selectedDateMillis!!),
-                                userId = dashboardState.userData!!.userId,
-                                type = transactionType.type,
-                                category = selectedCategoryName.value
+                    when(validationError){
+                        is CreateTransactionErrors.AmountError -> showSnackbar("Amount can't be 0.0!")
+                        CreateTransactionErrors.CategorySelectError -> showSnackbar("Select a category!")
+                        CreateTransactionErrors.DateError -> showSnackbar("Select a date!")
+                        CreateTransactionErrors.InternetError -> showSnackbar("Check your network!")
+                        null -> {
+                            onCreateTransaction(
+                                Transaction(
+                                    createdAt = System.currentTimeMillis(),
+                                    amount = amountVal,
+                                    description = descriptionVal,
+                                    date = Date(datePickerState.selectedDateMillis!!),
+                                    userId = dashboardState.userData!!.userId,
+                                    type = transactionType.type,
+                                    category = selectedCategoryName.value
+                                )
                             )
-                        )
-                        selectedCategoryName.value = ""
-                        dateButtonText = "Select Date"
-                        onDismissRequest()
+                            selectedCategoryName.value = ""
+                            dateButtonText = "Select Date"
+                            onDismissRequest()
+                            showSnackbar("Transaction created!")
+                        }
                     }
                 }
             ) {

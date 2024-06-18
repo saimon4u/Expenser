@@ -29,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -50,6 +51,7 @@ import coil.compose.AsyncImage
 import com.example.expenser.R
 import com.example.expenser.domain.model.NavigationItem
 import com.example.expenser.presentation.components.CustomDrawer
+import com.example.expenser.presentation.components.CustomSnackbar
 import com.example.expenser.presentation.components.SettingsContent
 import com.example.expenser.presentation.components.TransactionHistory
 import com.example.expenser.presentation.dashboard.Dashboard

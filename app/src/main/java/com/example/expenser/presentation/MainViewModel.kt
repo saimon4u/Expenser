@@ -1,12 +1,16 @@
 package com.example.expenser.presentation
 
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.expenser.domain.model.NavigationItem
 import com.example.expenser.domain.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MainViewModel: ViewModel() {
@@ -30,5 +34,6 @@ class MainViewModel: ViewModel() {
     fun onDrawerClick(state: CustomDrawerState){
         _drawerState.update { state }
     }
+
 
 }

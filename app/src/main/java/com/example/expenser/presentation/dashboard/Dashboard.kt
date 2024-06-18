@@ -17,13 +17,20 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,12 +39,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.expenser.presentation.components.CustomSnackbar
 import com.example.expenser.util.TransactionType
 import com.example.expenser.presentation.components.TransactionDialog
 import com.example.expenser.presentation.sign_in.UserData
 import com.example.expenser.ui.theme.Emerald500
 import com.example.expenser.ui.theme.Red500
 import com.example.expenser.ui.theme.fonts
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -52,109 +61,145 @@ fun Dashboard(
     val openTransactionDialog = remember { mutableStateOf(false) }
     val selectedTransactionType = remember { mutableStateOf(TransactionType.Income) }
 
-    if(openTransactionDialog.value){
-        TransactionDialog(
-            transactionType = selectedTransactionType.value,
-            onDismissRequest = {
-                openTransactionDialog.value = false
-            },
-            onCategoryCreate = dashboardViewModel::onCategoryCreate,
-            dashboardState = dashboardState,
-            getAllCategories = dashboardViewModel::getAllCategories,
-            onCreateTransaction = dashboardViewModel::onTransactionCreate
-        )
+
+
+
+
+
+    val snackbarHostState = remember {
+        SnackbarHostState()
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
+    val scope = rememberCoroutineScope()
+
+
+
+    LaunchedEffect(
+        dashboardState.showSnackbar
     ) {
-        Row (
-            modifier = Modifier
-                .fillMaxWidth(),
-        ){
-            Text(
-                text = ("Hello ${userData?.userName ?: "User"}!"),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Icon(
-                imageVector = Icons.Rounded.WavingHand,
-                contentDescription = "Waving Hand",
-                tint = MaterialTheme.colorScheme.tertiary,
-                modifier = Modifier
-                    .size(20.dp)
+        if(dashboardState.showSnackbar){
+            scope.launch {
+                if(snackbarHostState.currentSnackbarData != null) snackbarHostState.currentSnackbarData?.dismiss()
+                snackbarHostState.showSnackbar("", "", duration = SnackbarDuration.Short)
+            }
+            dashboardViewModel.updateSnackbarState()
+        }
+    }
+
+
+
+    Scaffold {padding->
+        if(openTransactionDialog.value){
+            TransactionDialog(
+                transactionType = selectedTransactionType.value,
+                onDismissRequest = {
+                    openTransactionDialog.value = false
+                },
+                onCategoryCreate = dashboardViewModel::onCategoryCreate,
+                dashboardState = dashboardState,
+                getAllCategories = dashboardViewModel::getAllCategories,
+                onCreateTransaction = dashboardViewModel::onTransactionCreate,
+                showSnackbar = dashboardViewModel::showSnackbar
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
         ) {
-            Button(
-                shape = RoundedCornerShape(5.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Emerald500
-                ),
-                onClick = {
-                    openTransactionDialog.value = true
-                    selectedTransactionType.value = TransactionType.Income
-                }
-            ) {
-                Row (
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Icon(
-                        imageVector = Icons.Rounded.AddCircleOutline,
-                        contentDescription = "Add Icon",
-                        tint = Color.Black,
-                        modifier = Modifier
-                            .size(15.dp)
-                    )
-                    Text(
-                        text = "New Income 💰",
-                        fontSize = 10.sp,
-                        fontFamily = fonts,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.White
-                    )
-                }
+            Row (
+                modifier = Modifier
+                    .fillMaxWidth(),
+            ){
+                Text(
+                    text = ("Hello ${userData?.userName ?: "User"}!"),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Icon(
+                    imageVector = Icons.Rounded.WavingHand,
+                    contentDescription = "Waving Hand",
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier
+                        .size(20.dp)
+                )
             }
-            Button(
-                shape = RoundedCornerShape(5.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Red500
-                ),
-                onClick = {
-                    openTransactionDialog.value = true
-                    selectedTransactionType.value = TransactionType.Expense
-                }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Row (
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Icon(
-                        imageVector = Icons.Rounded.AddCircleOutline,
-                        contentDescription = "Add Icon",
-                        tint = Color.Black,
-                        modifier = Modifier
-                            .size(15.dp)
-                    )
-                    Text(
-                        text = "New Expense 😤",
-                        fontSize = 10.sp,
-                        fontFamily = fonts,
-                        fontWeight = FontWeight.Normal,
-                        color = Color.White
-                    )
+                Button(
+                    shape = RoundedCornerShape(5.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Emerald500
+                    ),
+                    onClick = {
+                        openTransactionDialog.value = true
+                        selectedTransactionType.value = TransactionType.Income
+                    }
+                ) {
+                    Row (
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Icon(
+                            imageVector = Icons.Rounded.AddCircleOutline,
+                            contentDescription = "Add Icon",
+                            tint = Color.Black,
+                            modifier = Modifier
+                                .size(15.dp)
+                        )
+                        Text(
+                            text = "New Income 💰",
+                            fontSize = 10.sp,
+                            fontFamily = fonts,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.White
+                        )
+                    }
+                }
+                Button(
+                    shape = RoundedCornerShape(5.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Red500
+                    ),
+                    onClick = {
+                        openTransactionDialog.value = true
+                        selectedTransactionType.value = TransactionType.Expense
+                    }
+                ) {
+                    Row (
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Icon(
+                            imageVector = Icons.Rounded.AddCircleOutline,
+                            contentDescription = "Add Icon",
+                            tint = Color.Black,
+                            modifier = Modifier
+                                .size(15.dp)
+                        )
+                        Text(
+                            text = "New Expense 😤",
+                            fontSize = 10.sp,
+                            fontFamily = fonts,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }
+
+        CustomSnackbar(
+            snackbarHostState = snackbarHostState,
+            modifier = Modifier,
+            message = dashboardState.snackbarMessage,
+        )
     }
 }

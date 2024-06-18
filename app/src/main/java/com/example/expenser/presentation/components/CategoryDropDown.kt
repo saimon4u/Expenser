@@ -1,6 +1,5 @@
 package com.example.expenser.presentation.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddCircleOutline
 import androidx.compose.material.icons.rounded.ArrowDropDown
-import androidx.compose.material.icons.rounded.Downloading
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -59,7 +57,8 @@ fun CategoryDropDown(
     onCategoryCreate: (Category) -> Unit,
     transactionType: TransactionType,
     dashboardState: DashboardState,
-    getAllCategories: (String, TransactionType) -> Unit
+    getAllCategories: (String, TransactionType) -> Unit,
+    showSnackbar: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     var categoryTextBoxOpen by remember { mutableStateOf(false) }
@@ -97,13 +96,15 @@ fun CategoryDropDown(
                             categoryNameVal = it
                         },
                         label = "Category Name",
-                        validationError = validationError != null,
-                        errorMessage = when(validationError){
-                            is CreateCategoryErrors.ValidationError -> "Limit: ${categoryNameVal.length}/10"
-                            is CreateCategoryErrors.DuplicateError -> "category already exist"
-                            is CreateCategoryErrors.ContainNumberError -> "category can't contain number"
-                            null -> ""
-                        }
+//                        validationError = validationError != null,
+//                        errorMessage = when(validationError){
+//                            is CreateCategoryErrors.DuplicateError -> "category already exist"
+//                            is CreateCategoryErrors.ContainNumberError -> "category can't contain number"
+//                            is CreateCategoryErrors.InternetError -> "Check Internet Connection"
+//                            is CreateCategoryErrors.BlackNameError -> TODO()
+//                            is CreateCategoryErrors.LongNameError -> TODO()
+//                            null -> ""
+//                        }
                     )
                     
                     Spacer(modifier = Modifier.height(15.dp))
@@ -111,17 +112,26 @@ fun CategoryDropDown(
                     Button(
                         onClick ={
                             validationError = validateCategoryName(categoryNameVal, dashboardState.categoryList)
-                            if(validationError == null){
-                                onCategoryCreate(
-                                    Category(
-                                        createdAt = System.currentTimeMillis(),
-                                        name = categoryNameVal,
-                                        userId = dashboardState.userData?.userId ?: "",
-                                        type = transactionType.type
+
+                            when(validationError){
+                                is CreateCategoryErrors.ContainNumberError -> showSnackbar("Can't contain number or special char!")
+                                is CreateCategoryErrors.DuplicateError -> showSnackbar("Category already exists!")
+                                is CreateCategoryErrors.InternetError -> showSnackbar("Check your network connection!")
+                                is CreateCategoryErrors.BlackNameError -> showSnackbar("Category can't be blank!")
+                                is CreateCategoryErrors.LongNameError -> showSnackbar("Char limit is: 10!")
+                                null -> {
+                                    onCategoryCreate(
+                                        Category(
+                                            createdAt = System.currentTimeMillis(),
+                                            name = categoryNameVal,
+                                            userId = dashboardState.userData?.userId ?: "",
+                                            type = transactionType.type
+                                        )
                                     )
-                                )
-                                categoryTextBoxOpen = false
-                                categoryNameVal = ""
+                                    showSnackbar("Category created!")
+                                    categoryTextBoxOpen = false
+                                    categoryNameVal = ""
+                                }
                             }
                         },
                         shape = RoundedCornerShape(5.dp),
@@ -227,8 +237,8 @@ fun CategoryDropDown(
                             Text(
                                 text = option.name,
                                 fontFamily = fonts,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Light,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 textAlign = TextAlign.Center
                             )

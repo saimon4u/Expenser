@@ -48,7 +48,6 @@ fun TransactionHistory() {
             snackbarHostState = snackbarHostState,
             modifier = Modifier,
             message = "Transaction Added",
-            color = Emerald500.copy(.2f)
         )
     }
 }
