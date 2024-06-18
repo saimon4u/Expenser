@@ -42,7 +42,7 @@ fun CustomSnackbar(
 
         SnackbarHost(
             modifier = modifier
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                .padding(start = 20.dp, end = 20.dp, top = 5.dp)
                 .constrainAs(snackbar) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
@@ -54,19 +54,6 @@ fun CustomSnackbar(
                     shape = RoundedCornerShape(15.dp),
                     containerColor = MaterialTheme.colorScheme.onSurface,
                     contentColor = MaterialTheme.colorScheme.inverseOnSurface,
-//                    action = {
-//                        Icon(
-//                            imageVector = Icons.Default.Close,
-//                            contentDescription = null,
-//                            modifier = modifier
-//                                .padding(10.dp)
-//                                .size(25.dp)
-//                                .clip(CircleShape)
-//                                .clickable {
-//                                    snackbarHostState.currentSnackbarData?.dismiss()
-//                                }
-//                        )
-//                    }
                 ){
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

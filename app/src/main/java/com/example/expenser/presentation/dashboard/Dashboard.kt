@@ -1,6 +1,5 @@
 package com.example.expenser.presentation.dashboard
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,10 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.rounded.AddCircleOutline
 import androidx.compose.material.icons.rounded.WavingHand
 import androidx.compose.material3.Button
@@ -23,27 +20,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
-
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.expenser.presentation.components.CustomSnackbar
+import com.example.expenser.presentation.components.TransactionCreateBox
 import com.example.expenser.util.TransactionType
 import com.example.expenser.presentation.components.TransactionDialog
 import com.example.expenser.presentation.sign_in.UserData
@@ -140,78 +132,23 @@ fun Dashboard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Button(
-                    shape = RoundedCornerShape(5.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Emerald500
-                    ),
-                    onClick = {
-                        openTransactionDialog.value = true
-                        selectedTransactionType.value = TransactionType.Income
-                    }
-                ) {
-                    Row (
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-                        Icon(
-                            imageVector = Icons.Rounded.AddCircleOutline,
-                            contentDescription = "Add Icon",
-                            tint = Color.Black,
-                            modifier = Modifier
-                                .size(15.dp)
-                        )
-                        Text(
-                            text = "New Income 💰",
-                            fontSize = 10.sp,
-                            fontFamily = fonts,
-                            fontWeight = FontWeight.Normal,
-                            color = Color.White
-                        )
-                    }
+            TransactionCreateBox(
+                onIncomeClick = {
+                    openTransactionDialog.value = true
+                    selectedTransactionType.value = TransactionType.Income
+                },
+                onExpenseClick = {
+                    openTransactionDialog.value = true
+                    selectedTransactionType.value = TransactionType.Expense
                 }
-                Button(
-                    shape = RoundedCornerShape(5.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Red500
-                    ),
-                    onClick = {
-                        openTransactionDialog.value = true
-                        selectedTransactionType.value = TransactionType.Expense
-                    }
-                ) {
-                    Row (
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-                        Icon(
-                            imageVector = Icons.Rounded.AddCircleOutline,
-                            contentDescription = "Add Icon",
-                            tint = Color.Black,
-                            modifier = Modifier
-                                .size(15.dp)
-                        )
-                        Text(
-                            text = "New Expense 😤",
-                            fontSize = 10.sp,
-                            fontFamily = fonts,
-                            fontWeight = FontWeight.Normal,
-                            color = Color.White
-                        )
-                    }
-                }
-            }
+            )
         }
-
-
         SwipeableActionsBox(
             startActions = listOf(action),
-            endActions = listOf(action)
+            endActions = listOf(action),
+            modifier = Modifier
+                .padding(start = 20.dp, end = 20.dp, top = 5.dp),
+            backgroundUntilSwipeThreshold = Color.Transparent
         ) {
             CustomSnackbar(
                 snackbarHostState = snackbarHostState,
