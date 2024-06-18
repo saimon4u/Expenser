@@ -1,5 +1,6 @@
 package com.example.expenser.presentation.dashboard
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.rounded.AddCircleOutline
 import androidx.compose.material.icons.rounded.WavingHand
 import androidx.compose.material3.Button
@@ -34,6 +37,7 @@ import androidx.compose.runtime.setValue
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -47,6 +51,8 @@ import com.example.expenser.ui.theme.Emerald500
 import com.example.expenser.ui.theme.Red500
 import com.example.expenser.ui.theme.fonts
 import kotlinx.coroutines.launch
+import me.saket.swipe.SwipeAction
+import me.saket.swipe.SwipeableActionsBox
 
 
 @Composable
@@ -61,16 +67,22 @@ fun Dashboard(
     val openTransactionDialog = remember { mutableStateOf(false) }
     val selectedTransactionType = remember { mutableStateOf(TransactionType.Income) }
 
-
-
-
-
-
     val snackbarHostState = remember {
         SnackbarHostState()
     }
 
     val scope = rememberCoroutineScope()
+
+    val action = SwipeAction(
+        onSwipe = {
+            snackbarHostState.currentSnackbarData?.dismiss()
+        },
+        icon = {
+
+        },
+        background = Color.Transparent,
+        isUndo = false,
+    )
 
 
 
@@ -196,10 +208,16 @@ fun Dashboard(
             }
         }
 
-        CustomSnackbar(
-            snackbarHostState = snackbarHostState,
-            modifier = Modifier,
-            message = dashboardState.snackbarMessage,
-        )
+
+        SwipeableActionsBox(
+            startActions = listOf(action),
+            endActions = listOf(action)
+        ) {
+            CustomSnackbar(
+                snackbarHostState = snackbarHostState,
+                modifier = Modifier,
+                message = dashboardState.snackbarMessage,
+            )
+        }
     }
 }

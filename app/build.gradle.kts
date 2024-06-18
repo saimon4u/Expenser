@@ -71,27 +71,40 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
 
+    //firebase
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
     implementation("com.google.firebase:firebase-auth:23.0.0")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
     implementation("com.google.firebase:firebase-firestore")
 
+
+    //viewmodel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.2")
+
+    //navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    //image
     implementation("io.coil-kt:coil-compose:2.2.2")
 
+    //room
     implementation("androidx.room:room-ktx:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-paging:2.6.1")
 
+    //dagger hilt
     implementation("com.google.dagger:hilt-android:2.49")
     kapt("com.google.dagger:hilt-compiler:2.49")
     kapt("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
+    //extended icons
     implementation("androidx.compose.material:material-icons-extended:1.6.8")
 
+    //constraint layout
     api("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
+    //swipeable
+    implementation("me.saket.swipe:swipe:1.3.0")
 }
