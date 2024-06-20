@@ -6,7 +6,6 @@ import com.example.expenser.domain.repository.Repository
 import com.example.expenser.util.DatabasePath
 import com.example.expenser.util.Resource
 import com.example.expenser.util.TransactionType
-import com.example.expenser.util.debug
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.flow.Flow
@@ -54,6 +53,81 @@ class RepositoryImpl @Inject constructor(
             emit(Resource.Loading(false))
             if (result) emit(Resource.Success(categoryList))
             else emit(Resource.Error(message = "Error Fetching data"))
+        }
+    }
+
+    override suspend fun getAllTransaction(userId: String): Flow<Resource<List<Transaction>>> {
+        return flow {
+
+            val transactionList = mutableListOf<Transaction>()
+            var result = true
+            emit(Resource.Loading(true))
+
+            database.collection(DatabasePath.Transaction.path)
+                .document(userId)
+                .collection(TransactionType.Income.type)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener {
+                    for (document in it) {
+                        val category = document.toObject(Transaction::class.java)
+                        transactionList.add(category)
+                    }
+                }
+                .addOnFailureListener {
+                    result = false
+                }
+                .await()
+            database.collection(DatabasePath.Transaction.path)
+                .document(userId)
+                .collection(TransactionType.Expense.type)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener {
+                    for (document in it) {
+                        val category = document.toObject(Transaction::class.java)
+                        transactionList.add(category)
+                    }
+                }
+                .addOnFailureListener {
+                    result = false
+                }
+                .await()
+
+            emit(Resource.Loading(false))
+            if(result){
+                emit(Resource.Success(data = transactionList))
+            }else{
+                emit(Resource.Error("Error fetching transaction list"))
+            }
+        }
+    }
+
+    override suspend fun getBalance(userId: String, balanceType: String): Flow<Resource<Double>> {
+        return flow {
+
+            var balance = 0.0
+            var result = true
+            emit(Resource.Loading(true))
+
+            database.collection(DatabasePath.Transaction.path)
+                .document(userId)
+                .collection(balanceType)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener {
+                    for (document in it) {
+                        balance += document.get("amount") as Double
+                    }
+                }
+                .addOnFailureListener {
+                    result = false
+                }
+                .await()
+
+            emit(Resource.Loading(false))
+            if(result) emit(Resource.Success(data = balance))
+            else emit(Resource.Error("Error getting balance"))
         }
     }
 }

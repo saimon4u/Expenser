@@ -9,5 +9,8 @@ data class DashboardState(
     val categoryList: List<Category> = emptyList(),
     val isLoading: Boolean = false,
     val showSnackbar: Boolean = false,
-    val snackbarMessage: String = ""
+    val snackbarMessage: String = "",
+    val isBalanceFetching: Boolean = true,
+    val incomeBalance: Double = 0.0,
+    val expenseBalance: Double = 0.0,
 )

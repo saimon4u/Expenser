@@ -140,7 +140,8 @@ fun Dashboard(
 
             Overview(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                dashboardState = dashboardState
             )
         }
         SwipeableActionsBox(

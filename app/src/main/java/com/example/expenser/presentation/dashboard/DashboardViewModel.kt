@@ -1,8 +1,5 @@
 package com.example.expenser.presentation.dashboard
 
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expenser.domain.model.Category
@@ -38,6 +35,7 @@ class DashboardViewModel @Inject constructor(
                 )
             }
         }
+        getBalance()
     }
 
 
@@ -78,6 +76,7 @@ class DashboardViewModel @Inject constructor(
     fun onTransactionCreate(transaction: Transaction){
         viewModelScope.launch {
             repository.addTransaction(transaction)
+            getBalance()
         }
     }
 
@@ -99,4 +98,47 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    private fun getBalance(){
+        viewModelScope.launch {
+            repository.getBalance(_dashboardState.value.userData!!.userId, TransactionType.Income.type).collectLatest {result->
+                when(result){
+                    is Resource.Error -> TODO()
+                    is Resource.Loading -> {
+                        _dashboardState.update {
+                            it.copy(
+                                isBalanceFetching = result.isLoading
+                            )
+                        }
+                    }
+                    is Resource.Success -> {
+                        _dashboardState.update {
+                            it.copy(
+                                incomeBalance = result.data ?: 0.0
+                            )
+                        }
+                    }
+                }
+            }
+
+            repository.getBalance(_dashboardState.value.userData!!.userId, TransactionType.Expense.type).collectLatest {result->
+                when(result){
+                    is Resource.Error -> TODO()
+                    is Resource.Loading -> {
+                        _dashboardState.update {
+                            it.copy(
+                                isBalanceFetching = result.isLoading
+                            )
+                        }
+                    }
+                    is Resource.Success -> {
+                        _dashboardState.update {
+                            it.copy(
+                                expenseBalance = result.data ?: 0.0
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
