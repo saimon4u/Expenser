@@ -9,7 +9,8 @@ import kotlinx.coroutines.flow.Flow
 interface Repository {
     suspend fun addTransaction(transaction: Transaction)
     suspend fun addCategory(category: Category)
-    suspend fun getAllCategory(userId: String, type: TransactionType): Flow<Resource<List<Category>>>
+    suspend fun getCategoryListByType(userId: String, type: TransactionType): Flow<Resource<List<Category>>>
+//    suspend fun getAllCategories(userId: String): Flow<Resource<List<Category>>>
     suspend fun getAllTransaction(userId: String): Flow<Resource<List<Transaction>>>
     suspend fun getBalance(userId: String, balanceType: String): Flow<Resource<Double>>
 }

@@ -27,7 +27,7 @@ class RepositoryImpl @Inject constructor(
         document.set(category)
     }
 
-    override suspend fun getAllCategory(userId: String, type: TransactionType): Flow<Resource<List<Category>>> {
+    override suspend fun getCategoryListByType(userId: String, type: TransactionType): Flow<Resource<List<Category>>> {
         return flow {
 
             val categoryList = mutableListOf<Category>()
@@ -130,4 +130,82 @@ class RepositoryImpl @Inject constructor(
             else emit(Resource.Error("Error getting balance"))
         }
     }
+
+    private suspend fun getCategoriesWithoutType(userId: String): MutableList<Category>{
+        val categoryList = mutableListOf<Category>()
+        database.collection(DatabasePath.Category.path)
+            .document(userId)
+            .collection(TransactionType.Income.type)
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener {
+                for (document in it) {
+                    val category = document.toObject(Category::class.java)
+                    categoryList.add(category)
+                }
+            }
+            .await()
+
+        database.collection(DatabasePath.Category.path)
+            .document(userId)
+            .collection(TransactionType.Expense.type)
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener {
+                for (document in it) {
+                    val category = document.toObject(Category::class.java)
+                    categoryList.add(category)
+                }
+            }
+            .await()
+
+        return categoryList
+    }
+
+//    override suspend fun getAllCategories(
+//        userId: String
+//    ): Flow<Resource<List<Category>>> {
+//        return flow {
+//            emit(Resource.Loading(true))
+//            val categoryList = mutableListOf<Category>()
+//            var result = true
+//            database.collection(DatabasePath.Category.path)
+//                .document(userId)
+//                .collection(TransactionType.Expense.type)
+//                .orderBy("createdAt", Query.Direction.DESCENDING)
+//                .get()
+//                .addOnSuccessListener {
+//                    for (document in it) {
+//                        val category = document.toObject(Category::class.java)
+//                        categoryList.add(category)
+//                    }
+//                    result = true
+//                }
+//                .addOnFailureListener {
+//                    result = false
+//                }
+//                .await()
+//
+//            database.collection(DatabasePath.Category.path)
+//                .document(userId)
+//                .collection(TransactionType.Income.type)
+//                .orderBy("createdAt", Query.Direction.DESCENDING)
+//                .get()
+//                .addOnSuccessListener {
+//                    for (document in it) {
+//                        val category = document.toObject(Category::class.java)
+//                        categoryList.add(category)
+//                    }
+//                    result = true
+//                }
+//                .addOnFailureListener {
+//                    result = false
+//                }
+//                .await()
+//
+//            emit(Resource.Loading(false))
+//            if (result) emit(Resource.Success(categoryList))
+//            else emit(Resource.Error(message = "Error Fetching data"))
+//        }
+//    }
 }

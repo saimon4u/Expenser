@@ -92,7 +92,7 @@ fun Dashboard(
                 },
                 onCategoryCreate = dashboardViewModel::onCategoryCreate,
                 dashboardState = dashboardState,
-                getAllCategories = dashboardViewModel::getAllCategories,
+                getAllCategories = dashboardViewModel::getCategoriesByType,
                 onCreateTransaction = dashboardViewModel::onTransactionCreate,
                 showSnackbar = dashboardViewModel::showSnackbar
             )
@@ -141,7 +141,7 @@ fun Dashboard(
             Overview(
                 modifier = Modifier
                     .fillMaxWidth(),
-                dashboardState = dashboardState
+                dashboardState = dashboardState,
             )
         }
         SwipeableActionsBox(

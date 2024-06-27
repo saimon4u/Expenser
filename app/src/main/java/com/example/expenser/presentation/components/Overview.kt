@@ -3,7 +3,12 @@ package com.example.expenser.presentation.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.TrendingDown
 import androidx.compose.material.icons.filled.TrendingUp
@@ -26,12 +31,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.expenser.domain.model.Category
 import com.example.expenser.presentation.dashboard.DashboardState
+import com.example.expenser.presentation.dashboard.DashboardViewModel
 import com.example.expenser.ui.theme.Emerald500
 import com.example.expenser.ui.theme.Purple40
 import com.example.expenser.ui.theme.Purple80
 import com.example.expenser.ui.theme.Red500
 import com.example.expenser.ui.theme.fonts
+import com.example.expenser.util.TransactionType
 import com.example.expenser.util.convertMillisToDate
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -40,12 +48,13 @@ import java.util.Calendar
 @Composable
 fun Overview(
     modifier: Modifier = Modifier,
-    dashboardState: DashboardState
+    dashboardState: DashboardState,
 ){
 
     val dateRangePickerState = rememberDateRangePickerState()
     val bottomSheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
 
     var selectedStartDate by remember {
         mutableStateOf(Calendar.getInstance().apply { set(Calendar.DAY_OF_MONTH, 2) }.timeInMillis.convertMillisToDate())
@@ -54,6 +63,7 @@ fun Overview(
     var selectedEndDate by remember {
         mutableStateOf(System.currentTimeMillis().convertMillisToDate())
     }
+
 
     if (bottomSheetState.currentValue != SheetValue.Hidden){
         CustomDateRangePicker(
@@ -75,6 +85,7 @@ fun Overview(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(scrollState)
     ) {
         Text(
             text = "Overview",
@@ -140,5 +151,66 @@ fun Overview(
                 )
             },
         )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        TransactionsByCategoryView(
+            isLoading = dashboardState.isCategoryFetching || dashboardState.isTransactionFetching,
+            contentAfterLoading ={
+                TransactionByCategoryBox(
+                    categoryList = dashboardState.incomeCategoryList,
+                    heading = "Incomes",
+                    totalAmount = dashboardState.incomeBalance,
+                    getAmount = {category->
+                        var amount = 0.0
+                        dashboardState.transactionList.map {transaction->
+                            if(transaction.category == category.name && transaction.type == category.type){
+                                amount += transaction.amount
+                            }
+                        }
+                        amount
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp)
+                        .padding(horizontal = 8.dp)
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .padding(horizontal = 8.dp)
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        TransactionsByCategoryView(
+            isLoading = dashboardState.isCategoryFetching || dashboardState.isTransactionFetching,
+            contentAfterLoading ={
+                TransactionByCategoryBox(
+                    categoryList = dashboardState.expenseCategoryList,
+                    heading = "Expenses",
+                    totalAmount = dashboardState.expenseBalance,
+                    getAmount = {category->
+                        var amount = 0.0
+                        dashboardState.transactionList.map {transaction->
+                            if(transaction.category == category.name && transaction.type == category.type){
+                                amount += transaction.amount
+                            }
+                        }
+                        amount
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp)
+                        .padding(horizontal = 8.dp)
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .padding(horizontal = 8.dp)
+        )
     }
+
 }

@@ -64,6 +64,7 @@ fun CategoryDropDown(
     var categoryTextBoxOpen by remember { mutableStateOf(false) }
     var categoryNameVal by remember { mutableStateOf("") }
     var validationError by remember { mutableStateOf<CreateCategoryErrors?>(null) }
+    val categoryList = if(transactionType == TransactionType.Expense) dashboardState.expenseCategoryList else dashboardState.incomeCategoryList
 
     if(categoryTextBoxOpen){
         Dialog(
@@ -96,22 +97,13 @@ fun CategoryDropDown(
                             categoryNameVal = it
                         },
                         label = "Category Name",
-//                        validationError = validationError != null,
-//                        errorMessage = when(validationError){
-//                            is CreateCategoryErrors.DuplicateError -> "category already exist"
-//                            is CreateCategoryErrors.ContainNumberError -> "category can't contain number"
-//                            is CreateCategoryErrors.InternetError -> "Check Internet Connection"
-//                            is CreateCategoryErrors.BlackNameError -> TODO()
-//                            is CreateCategoryErrors.LongNameError -> TODO()
-//                            null -> ""
-//                        }
                     )
                     
                     Spacer(modifier = Modifier.height(15.dp))
 
                     Button(
                         onClick ={
-                            validationError = validateCategoryName(categoryNameVal, dashboardState.categoryList)
+                            validationError = validateCategoryName(categoryNameVal, categoryList)
 
                             when(validationError){
                                 is CreateCategoryErrors.ContainNumberError -> showSnackbar("Can't contain number or special char!")
@@ -202,7 +194,7 @@ fun CategoryDropDown(
                 onClick = { categoryTextBoxOpen = true }
             )
 
-            if(dashboardState.categoryList.isEmpty()){
+            if(categoryList.isEmpty()){
                 DropdownMenuItem(
                     text = {
                         Box (
@@ -226,7 +218,7 @@ fun CategoryDropDown(
                 )
             }
 
-            dashboardState.categoryList.forEach { option ->
+            categoryList.forEach { option ->
                 DropdownMenuItem(
                     text = {
                         Box(

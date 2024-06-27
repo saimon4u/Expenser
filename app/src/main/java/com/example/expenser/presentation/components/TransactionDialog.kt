@@ -140,8 +140,6 @@ fun TransactionDialog(
                 placeholder = "Enter amount",
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-//                validationError = validationError != null,
-//                errorMessage = if(validationError == CreateTransactionErrors.AmountError) "Amount can't be 0" else ""
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -169,7 +167,6 @@ fun TransactionDialog(
                         fontFamily = fonts,
                         fontSize = 10.sp,
                         fontWeight = FontWeight.SemiBold,
-//                        color = if(validationError == CreateTransactionErrors.DateError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onTertiary
                         color = MaterialTheme.colorScheme.onTertiary
                     )
                 }
@@ -177,7 +174,6 @@ fun TransactionDialog(
 
                 CategoryDropDown(
                     selectedValue = selectedCategoryName.value,
-//                    selectedValueColor = if(validationError == CreateTransactionErrors.CategorySelectError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSecondary,
                     selectedValueColor = MaterialTheme.colorScheme.onSecondary,
                     onValueChangedEvent = {
                         if(validationError == CreateTransactionErrors.CategorySelectError) validationError = null

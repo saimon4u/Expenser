@@ -36,36 +36,70 @@ class DashboardViewModel @Inject constructor(
             }
         }
         getBalance()
+        getAllTransaction(user!!.userId)
+        getCategoriesByType(user.userId, TransactionType.Income)
+        getCategoriesByType(user.userId, TransactionType.Expense)
     }
 
 
     fun onCategoryCreate(category: Category){
         viewModelScope.launch {
             repository.addCategory(category)
-            getAllCategories(
+            getCategoriesByType(
                 userId = dashboardState.value.userData!!.userId,
                 type = if(category.type == TransactionType.Income.type) TransactionType.Income else TransactionType.Expense
             )
         }
     }
 
-    fun getAllCategories(userId: String, type: TransactionType){
+    private fun getAllTransaction(userId: String){
         viewModelScope.launch {
-            repository.getAllCategory(userId, type).collectLatest{result->
+            repository.getAllTransaction(userId).collectLatest { result->
                 when(result){
                     is Resource.Error -> TODO()
                     is Resource.Loading -> {
                         _dashboardState.update {
                             it.copy(
-                                isLoading = result.isLoading
+                                isTransactionFetching = result.isLoading
                             )
                         }
                     }
                     is Resource.Success -> {
                         _dashboardState.update {
                             it.copy(
-                                categoryList = result.data ?: emptyList()
+                                transactionList = result.data ?: emptyList()
                             )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun getCategoriesByType(userId: String, type: TransactionType){
+        viewModelScope.launch {
+            repository.getCategoryListByType(userId, type).collectLatest{ result->
+                when(result){
+                    is Resource.Error -> {
+                        debug(result.message.toString())
+                    }
+                    is Resource.Loading -> {
+                        _dashboardState.update {
+                            it.copy(
+                                isCategoryFetching = result.isLoading
+                            )
+                        }
+                    }
+                    is Resource.Success -> {
+                        _dashboardState.update {
+                            if(type == TransactionType.Expense)
+                                it.copy(
+                                    expenseCategoryList = result.data ?: emptyList()
+                                )
+                            else
+                                it.copy(
+                                    incomeCategoryList = result.data ?: emptyList()
+                                )
                         }
                     }
                 }
@@ -77,6 +111,7 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             repository.addTransaction(transaction)
             getBalance()
+            getAllTransaction(dashboardState.value.userData!!.userId)
         }
     }
 

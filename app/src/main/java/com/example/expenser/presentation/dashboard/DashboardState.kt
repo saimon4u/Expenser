@@ -1,16 +1,20 @@
 package com.example.expenser.presentation.dashboard
 
-import androidx.compose.ui.graphics.Color
 import com.example.expenser.domain.model.Category
+import com.example.expenser.domain.model.Transaction
 import com.example.expenser.presentation.sign_in.UserData
 
 data class DashboardState(
     val userData: UserData? = null,
-    val categoryList: List<Category> = emptyList(),
+    val expenseCategoryList: List<Category> = emptyList(),
+    val incomeCategoryList: List<Category> = emptyList(),
+    val transactionList: List<Transaction> = emptyList(),
     val isLoading: Boolean = false,
     val showSnackbar: Boolean = false,
-    val snackbarMessage: String = "",
     val isBalanceFetching: Boolean = true,
+    val isCategoryFetching: Boolean = true,
+    val isTransactionFetching: Boolean = true,
+    val snackbarMessage: String = "",
     val incomeBalance: Double = 0.0,
     val expenseBalance: Double = 0.0,
 )

@@ -90,7 +90,7 @@ fun MainScreen(
 
     Box(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.background)
             .statusBarsPadding()
             .navigationBarsPadding()
             .fillMaxSize()
