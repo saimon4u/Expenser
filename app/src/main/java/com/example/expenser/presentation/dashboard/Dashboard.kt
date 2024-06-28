@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.WavingHand
 import androidx.compose.material3.Icon
@@ -53,6 +55,7 @@ fun Dashboard(
     val snackbarHostState = remember {
         SnackbarHostState()
     }
+    val scrollState = rememberScrollState()
 
     val scope = rememberCoroutineScope()
 
@@ -81,6 +84,13 @@ fun Dashboard(
         }
     }
 
+    LaunchedEffect(key1 = Unit) {
+        dashboardViewModel.getBalance()
+        dashboardViewModel.getAllTransaction(dashboardState.userData!!.userId)
+        dashboardViewModel.getCategoriesByType(dashboardState.userData.userId, TransactionType.Income)
+        dashboardViewModel.getCategoriesByType(dashboardState.userData.userId, TransactionType.Expense)
+    }
+
 
 
     Scaffold {padding->
@@ -101,7 +111,8 @@ fun Dashboard(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .verticalScroll(scrollState),
         ) {
             Row (
                 modifier = Modifier
@@ -117,7 +128,7 @@ fun Dashboard(
                 Icon(
                     imageVector = Icons.Rounded.WavingHand,
                     contentDescription = "Waving Hand",
-                    tint = MaterialTheme.colorScheme.tertiary,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .size(20.dp)
                 )

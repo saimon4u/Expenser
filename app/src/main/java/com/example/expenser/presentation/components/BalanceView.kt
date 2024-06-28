@@ -31,7 +31,7 @@ fun BalanceView(
             modifier = modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.secondary)
+                .background(MaterialTheme.colorScheme.surface)
                 .shimmerEffect(),
         ) {
             Row(

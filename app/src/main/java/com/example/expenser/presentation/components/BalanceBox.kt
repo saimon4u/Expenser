@@ -41,7 +41,7 @@ fun BalanceBox(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.secondary),
+            .background(MaterialTheme.colorScheme.surface),
     ) {
         Row(
             modifier = Modifier
@@ -73,7 +73,7 @@ fun BalanceBox(
                     fontFamily = fonts,
                     fontWeight = FontWeight.Thin,
                     fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSecondary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Text(
@@ -81,7 +81,7 @@ fun BalanceBox(
                     fontFamily = fonts,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 17.sp,
-                    color = MaterialTheme.colorScheme.onSecondary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }

@@ -12,6 +12,7 @@ import androidx.compose.material.icons.rounded.AddCircleOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -50,7 +51,7 @@ fun TransactionCreateBox(
                 Icon(
                     imageVector = Icons.Rounded.AddCircleOutline,
                     contentDescription = "Add Icon",
-                    tint = Color.Black,
+                    tint = Color.White,
                     modifier = Modifier
                         .size(15.dp)
                 )
@@ -80,7 +81,7 @@ fun TransactionCreateBox(
                 Icon(
                     imageVector = Icons.Rounded.AddCircleOutline,
                     contentDescription = "Add Icon",
-                    tint = Color.Black,
+                    tint = Color.White,
                     modifier = Modifier
                         .size(15.dp)
                 )

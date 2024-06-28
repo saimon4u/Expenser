@@ -54,7 +54,6 @@ fun Overview(
     val dateRangePickerState = rememberDateRangePickerState()
     val bottomSheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
-    val scrollState = rememberScrollState()
 
     var selectedStartDate by remember {
         mutableStateOf(Calendar.getInstance().apply { set(Calendar.DAY_OF_MONTH, 2) }.timeInMillis.convertMillisToDate())
@@ -77,6 +76,7 @@ fun Overview(
         )
     }
 
+
     LaunchedEffect(key1 = dateRangePickerState.selectedStartDateMillis, key2 = dateRangePickerState.selectedEndDateMillis) {
         selectedStartDate = dateRangePickerState.selectedStartDateMillis?.convertMillisToDate() ?: selectedStartDate
         selectedEndDate = dateRangePickerState.selectedEndDateMillis?.convertMillisToDate() ?: selectedEndDate
@@ -85,7 +85,6 @@ fun Overview(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(scrollState)
     ) {
         Text(
             text = "Overview",
@@ -168,7 +167,8 @@ fun Overview(
                                 amount += transaction.amount
                             }
                         }
-                        amount
+                        if(amount.isNaN()) 0.000001
+                        else amount
                     },
                     modifier = Modifier
                         .fillMaxWidth()

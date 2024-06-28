@@ -35,10 +35,10 @@ class DashboardViewModel @Inject constructor(
                 )
             }
         }
-        getBalance()
-        getAllTransaction(user!!.userId)
-        getCategoriesByType(user.userId, TransactionType.Income)
-        getCategoriesByType(user.userId, TransactionType.Expense)
+//        getBalance()
+//        getAllTransaction(user!!.userId)
+//        getCategoriesByType(user.userId, TransactionType.Income)
+//        getCategoriesByType(user.userId, TransactionType.Expense)
     }
 
 
@@ -52,11 +52,19 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    private fun getAllTransaction(userId: String){
+    fun getAllTransaction(userId: String){
         viewModelScope.launch {
             repository.getAllTransaction(userId).collectLatest { result->
                 when(result){
-                    is Resource.Error -> TODO()
+                    is Resource.Error -> {
+                        debug(result.message.toString())
+                        _dashboardState.update {
+                            it.copy(
+                                showSnackbar = true,
+                                snackbarMessage = "Error Fetching transactions..."
+                            )
+                        }
+                    }
                     is Resource.Loading -> {
                         _dashboardState.update {
                             it.copy(
@@ -67,7 +75,7 @@ class DashboardViewModel @Inject constructor(
                     is Resource.Success -> {
                         _dashboardState.update {
                             it.copy(
-                                transactionList = result.data ?: emptyList()
+                                transactionList = result.data ?: emptyList(),
                             )
                         }
                     }
@@ -82,6 +90,12 @@ class DashboardViewModel @Inject constructor(
                 when(result){
                     is Resource.Error -> {
                         debug(result.message.toString())
+                        _dashboardState.update {
+                            it.copy(
+                                showSnackbar = true,
+                                snackbarMessage = "Error Fetching Categories..."
+                            )
+                        }
                     }
                     is Resource.Loading -> {
                         _dashboardState.update {
@@ -94,11 +108,11 @@ class DashboardViewModel @Inject constructor(
                         _dashboardState.update {
                             if(type == TransactionType.Expense)
                                 it.copy(
-                                    expenseCategoryList = result.data ?: emptyList()
+                                    expenseCategoryList = result.data ?: emptyList(),
                                 )
                             else
                                 it.copy(
-                                    incomeCategoryList = result.data ?: emptyList()
+                                    incomeCategoryList = result.data ?: emptyList(),
                                 )
                         }
                     }
@@ -110,8 +124,8 @@ class DashboardViewModel @Inject constructor(
     fun onTransactionCreate(transaction: Transaction){
         viewModelScope.launch {
             repository.addTransaction(transaction)
-            getBalance()
             getAllTransaction(dashboardState.value.userData!!.userId)
+            getBalance()
         }
     }
 
@@ -133,7 +147,7 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    private fun getBalance(){
+    fun getBalance(){
         viewModelScope.launch {
             repository.getBalance(_dashboardState.value.userData!!.userId, TransactionType.Income.type).collectLatest {result->
                 when(result){

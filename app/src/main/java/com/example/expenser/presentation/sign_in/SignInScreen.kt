@@ -54,7 +54,7 @@ fun SignInScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         contentAlignment = Alignment.Center,
     ){
@@ -62,7 +62,7 @@ fun SignInScreen(
             modifier = Modifier
                 .size(250.dp)
                 .clip(RoundedCornerShape(20.dp))
-                .background(MaterialTheme.colorScheme.onSurface)
+                .background(MaterialTheme.colorScheme.surface)
         ){
             Column(
                 modifier = Modifier
@@ -88,7 +88,7 @@ fun SignInScreen(
                     Text(
                         text = "Expenser",
                         style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.background
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 Spacer(modifier = Modifier.height(30.dp))
