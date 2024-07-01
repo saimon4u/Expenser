@@ -1,7 +1,9 @@
 package com.example.expenser.data.repository
 
 import com.example.expenser.domain.model.Category
+import com.example.expenser.domain.model.Currency
 import com.example.expenser.domain.model.Transaction
+import com.example.expenser.domain.model.UserSettings
 import com.example.expenser.domain.repository.Repository
 import com.example.expenser.util.DatabasePath
 import com.example.expenser.util.Resource
@@ -129,6 +131,12 @@ class RepositoryImpl @Inject constructor(
             if(result) emit(Resource.Success(data = balance))
             else emit(Resource.Error("Error getting balance"))
         }
+    }
+
+    override suspend fun updateUserSettings(userId: String, currency: Currency) {
+        val document = database.collection(DatabasePath.UserSettings.path).document(userId)
+        val settings = UserSettings(userId, currency)
+        document.set(settings)
     }
 
 }

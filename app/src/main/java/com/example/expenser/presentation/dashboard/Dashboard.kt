@@ -121,17 +121,17 @@ fun Dashboard(
                 horizontalArrangement = Arrangement.Center
             ){
                 Text(
-                    text = ("Hello ${userData?.userName ?: "User"}!"),
+                    text = ("Hello ${userData?.userName ?: "User"}! 👋"),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Icon(
-                    imageVector = Icons.Rounded.WavingHand,
-                    contentDescription = "Waving Hand",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .size(20.dp)
-                )
+//                Icon(
+//                    imageVector = Icons.Rounded.WavingHand,
+//                    contentDescription = "Waving Hand",
+//                    tint = MaterialTheme.colorScheme.primary,
+//                    modifier = Modifier
+//                        .size(20.dp)
+//                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -153,6 +153,7 @@ fun Dashboard(
                 modifier = Modifier
                     .fillMaxWidth(),
                 dashboardState = dashboardState,
+                onCategoryFetchingError = dashboardViewModel::getCategoriesByType
             )
         }
         SwipeableActionsBox(

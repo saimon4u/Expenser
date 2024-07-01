@@ -1,5 +1,6 @@
 package com.example.expenser
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -20,9 +21,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.expenser.presentation.MainScreen
+import com.example.expenser.presentation.splash.SplashScreen
 import com.example.expenser.presentation.sign_in.GoogleAuthClient
 import com.example.expenser.presentation.sign_in.SignInScreen
 import com.example.expenser.presentation.sign_in.SignInViewModel
+import com.example.expenser.presentation.splash.OnBoardingScreen
 import com.example.expenser.util.NavRoute
 import com.example.expenser.ui.theme.ExpenserTheme
 import com.google.android.gms.auth.api.identity.Identity
@@ -51,19 +54,9 @@ class MainActivity : ComponentActivity() {
                     val signInViewModel = viewModel<SignInViewModel>()
                     val state by signInViewModel.state.collectAsStateWithLifecycle()
 
-                    LaunchedEffect(
-                        key1 = Unit
-                    ) {
-                        if(googleAuthUiClient.getSignedInUser() != null){
-                            navController.navigate(NavRoute.Dashboard.route)
-                        } else{
-                            navController.navigate(NavRoute.SIGN_IN.route)
-                        }
-                    }
-
                     NavHost(
                         navController = navController,
-                        startDestination = NavRoute.SIGN_IN.route
+                        startDestination = NavRoute.Splash.route
                     ){
                         composable(
                             route = NavRoute.SIGN_IN.route
@@ -90,7 +83,11 @@ class MainActivity : ComponentActivity() {
                                 if(state.isSignInSuccessful){
                                     Toast.makeText(applicationContext, "Sign In Successful", Toast.LENGTH_SHORT).show()
                                     navController.popBackStack()
-                                    navController.navigate(NavRoute.Dashboard.route)
+                                    if(onBoardingIsFinished(this@MainActivity)){
+                                        navController.navigate(NavRoute.Dashboard.route)
+                                    }else{
+                                        navController.navigate(NavRoute.OnBoarding.route)
+                                    }
                                     signInViewModel.resetState()
                                 }
 
@@ -127,9 +124,33 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
+
+                        composable(
+                            route = NavRoute.Splash.route
+                        ){
+                            SplashScreen(
+                                navController = navController,
+                                googleAuthClient = googleAuthUiClient,
+                            )
+                        }
+
+                        composable(
+                            route = NavRoute.OnBoarding.route
+                        ){
+                            OnBoardingScreen(
+                                navController = navController,
+                                userData = googleAuthUiClient.getSignedInUser(),
+                                context = this@MainActivity
+                            )
+                        }
                     }
                 }
             }
         }
     }
+}
+
+private fun onBoardingIsFinished(context: MainActivity): Boolean {
+    val sharedPreferences = context.getSharedPreferences("onBoarding", Context.MODE_PRIVATE)
+    return sharedPreferences.getBoolean("isFinished", false)
 }

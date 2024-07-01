@@ -49,6 +49,7 @@ import java.util.Calendar
 fun Overview(
     modifier: Modifier = Modifier,
     dashboardState: DashboardState,
+    onCategoryFetchingError: (String, TransactionType) -> Unit
 ){
 
     val dateRangePickerState = rememberDateRangePickerState()
@@ -80,6 +81,12 @@ fun Overview(
     LaunchedEffect(key1 = dateRangePickerState.selectedStartDateMillis, key2 = dateRangePickerState.selectedEndDateMillis) {
         selectedStartDate = dateRangePickerState.selectedStartDateMillis?.convertMillisToDate() ?: selectedStartDate
         selectedEndDate = dateRangePickerState.selectedEndDateMillis?.convertMillisToDate() ?: selectedEndDate
+    }
+
+    LaunchedEffect(key1 = dashboardState.categoryFetchingError) {
+        if(dashboardState.categoryFetchingError){
+            onCategoryFetchingError(dashboardState.userData!!.userId, dashboardState.categoryErrorType)
+        }
     }
 
     Column(
@@ -154,7 +161,7 @@ fun Overview(
         Spacer(modifier = Modifier.height(10.dp))
 
         TransactionsByCategoryView(
-            isLoading = dashboardState.isCategoryFetching || dashboardState.isTransactionFetching,
+            isLoading = dashboardState.isCategoryFetching || dashboardState.isTransactionFetching || dashboardState.categoryFetchingError,
             contentAfterLoading ={
                 TransactionByCategoryBox(
                     categoryList = dashboardState.incomeCategoryList,
@@ -167,8 +174,7 @@ fun Overview(
                                 amount += transaction.amount
                             }
                         }
-                        if(amount.isNaN()) 0.000001
-                        else amount
+                        amount
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -185,7 +191,7 @@ fun Overview(
         Spacer(modifier = Modifier.height(10.dp))
 
         TransactionsByCategoryView(
-            isLoading = dashboardState.isCategoryFetching || dashboardState.isTransactionFetching,
+            isLoading = dashboardState.isCategoryFetching || dashboardState.isTransactionFetching || dashboardState.categoryFetchingError,
             contentAfterLoading ={
                 TransactionByCategoryBox(
                     categoryList = dashboardState.expenseCategoryList,

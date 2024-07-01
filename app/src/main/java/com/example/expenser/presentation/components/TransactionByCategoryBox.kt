@@ -72,7 +72,7 @@ fun TransactionByCategoryBox(
                     categoryTitle = it.name,
                     percentage = String.format("%.2f", p*100),
                     amount = String.format("%.2f", getAmount(it)),
-                    progress = p.toFloat()
+                    progress = if(p.isNaN()) 0f else p.toFloat()
                 )
             }
 

@@ -93,7 +93,9 @@ class DashboardViewModel @Inject constructor(
                         _dashboardState.update {
                             it.copy(
                                 showSnackbar = true,
-                                snackbarMessage = "Error Fetching Categories..."
+                                snackbarMessage = "Error Fetching Categories...",
+                                categoryFetchingError = true,
+                                categoryErrorType = type
                             )
                         }
                     }
@@ -109,10 +111,12 @@ class DashboardViewModel @Inject constructor(
                             if(type == TransactionType.Expense)
                                 it.copy(
                                     expenseCategoryList = result.data ?: emptyList(),
+                                    categoryFetchingError = type != dashboardState.value.categoryErrorType
                                 )
                             else
                                 it.copy(
                                     incomeCategoryList = result.data ?: emptyList(),
+                                    categoryFetchingError = type != dashboardState.value.categoryErrorType
                                 )
                         }
                     }

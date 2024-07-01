@@ -9,5 +9,11 @@ enum class NavRoute(
     ),
     Dashboard(
         route = "dashboard"
+    ),
+    Splash(
+        route = "splash"
+    ),
+    OnBoarding(
+        route = "on_boarding"
     )
 }

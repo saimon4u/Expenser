@@ -9,4 +9,7 @@ enum class DatabasePath(
     Transaction(
         path = "transaction"
     ),
+    UserSettings(
+        path = "user_settings"
+    )
 }
