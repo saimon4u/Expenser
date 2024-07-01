@@ -9,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.expenser.presentation.components.Divider
 import com.example.expenser.presentation.settings.components.Header
 import com.example.expenser.presentation.sign_in.UserData
 
@@ -28,5 +29,8 @@ fun Settings(
             modifier = Modifier
                 .fillMaxWidth()
         )
+        Divider()
+
+
     }
 }

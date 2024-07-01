@@ -8,12 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.WavingHand
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -29,11 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.expenser.presentation.components.CustomSnackbar
-import com.example.expenser.presentation.components.Overview
-import com.example.expenser.presentation.components.TransactionCreateBox
+import com.example.expenser.presentation.dashboard.components.CustomSnackbar
+import com.example.expenser.presentation.dashboard.components.Overview
+import com.example.expenser.presentation.dashboard.components.TransactionCreateBox
 import com.example.expenser.util.TransactionType
-import com.example.expenser.presentation.components.TransactionDialog
+import com.example.expenser.presentation.dashboard.components.TransactionDialog
 import com.example.expenser.presentation.sign_in.UserData
 import kotlinx.coroutines.launch
 import me.saket.swipe.SwipeAction
@@ -125,13 +121,6 @@ fun Dashboard(
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-//                Icon(
-//                    imageVector = Icons.Rounded.WavingHand,
-//                    contentDescription = "Waving Hand",
-//                    tint = MaterialTheme.colorScheme.primary,
-//                    modifier = Modifier
-//                        .size(20.dp)
-//                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))

@@ -31,7 +31,7 @@ import com.example.expenser.MainActivity
 import com.example.expenser.presentation.sign_in.UserData
 import com.example.expenser.presentation.splash.components.CurrencyBox
 import com.example.expenser.presentation.splash.components.CurrencyListSheet
-import com.example.expenser.presentation.splash.components.Divider
+import com.example.expenser.presentation.components.Divider
 import com.example.expenser.presentation.splash.components.Heading
 import com.example.expenser.presentation.splash.components.currencyList
 import com.example.expenser.ui.theme.fonts

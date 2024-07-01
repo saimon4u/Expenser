@@ -1,4 +1,4 @@
-package com.example.expenser.presentation.components
+package com.example.expenser.presentation.dashboard.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

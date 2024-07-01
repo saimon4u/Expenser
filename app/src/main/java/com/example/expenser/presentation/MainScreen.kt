@@ -49,7 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.expenser.R
 import com.example.expenser.domain.model.NavigationItem
-import com.example.expenser.presentation.components.CustomDrawer
+import com.example.expenser.presentation.dashboard.components.CustomDrawer
 import com.example.expenser.presentation.components.TransactionHistory
 import com.example.expenser.presentation.dashboard.Dashboard
 import com.example.expenser.presentation.settings.Settings

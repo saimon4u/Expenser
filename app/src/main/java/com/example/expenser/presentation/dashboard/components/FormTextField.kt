@@ -1,4 +1,4 @@
-package com.example.expenser.presentation.components
+package com.example.expenser.presentation.dashboard.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions

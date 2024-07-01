@@ -1,4 +1,4 @@
-package com.example.expenser.presentation.components
+package com.example.expenser.presentation.dashboard.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +19,6 @@ import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -38,17 +37,13 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.expenser.domain.model.Category
 import com.example.expenser.domain.model.Transaction
-import com.example.expenser.util.TransactionType
 import com.example.expenser.presentation.dashboard.DashboardState
-import com.example.expenser.util.convertMillisToDate
 import com.example.expenser.ui.theme.Emerald500
 import com.example.expenser.ui.theme.fonts
-import com.example.expenser.util.CreateCategoryErrors
 import com.example.expenser.util.CreateTransactionErrors
-import com.example.expenser.util.debug
-import com.example.expenser.util.validateCategoryName
+import com.example.expenser.util.TransactionType
+import com.example.expenser.util.convertMillisToDate
 import com.example.expenser.util.validateTransaction
-import java.lang.Exception
 import java.util.Date
 
 
@@ -78,7 +73,6 @@ fun TransactionDialog(
     }
 
     var validationError by remember { mutableStateOf<CreateTransactionErrors?>(null) }
-
 
 
     if(openDateDialog){
@@ -180,7 +174,10 @@ fun TransactionDialog(
                         selectedCategoryName.value = it
                     },
                     dashboardState = dashboardState,
-                    onCategoryCreate = onCategoryCreate,
+                    onCategoryCreate = {
+                        selectedCategoryName.value = it.name
+                        onCategoryCreate(it)
+                    },
                     transactionType = transactionType,
                     getAllCategories = getAllCategories,
                     modifier = Modifier.fillMaxWidth(),

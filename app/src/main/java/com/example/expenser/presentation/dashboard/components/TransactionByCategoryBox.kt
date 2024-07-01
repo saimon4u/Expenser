@@ -1,4 +1,4 @@
-package com.example.expenser.presentation.components
+package com.example.expenser.presentation.dashboard.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -7,17 +7,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +59,20 @@ fun TransactionByCategoryBox(
         }
 
         Spacer(modifier = Modifier.height(10.dp))
+        
+        if(categoryList.isEmpty()){
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                Text(
+                    text = "No data for the selected period",
+                    fontFamily = fonts,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Light,
+                )
+            }
+        }
 
         LazyColumn(
             modifier = Modifier.padding(horizontal = 10.dp),
@@ -68,58 +80,15 @@ fun TransactionByCategoryBox(
         ) {
             items(categoryList){
                 var p = ((getAmount(it))/totalAmount)
+                if(p.isNaN()) p = 0.0
                 TransactionByCategoryItem(
                     categoryTitle = it.name,
                     percentage = String.format("%.2f", p*100),
                     amount = String.format("%.2f", getAmount(it)),
-                    progress = if(p.isNaN()) 0f else p.toFloat()
+                    progress = p.toFloat()
                 )
             }
 
         }
-    }
-}
-
-@Composable
-fun TransactionByCategoryItem(
-    categoryTitle: String,
-    percentage: String,
-    amount: String,
-    progress: Float,
-    modifier: Modifier = Modifier
-){
-    Column(
-        modifier = modifier
-    ) {
-        Row(
-            modifier = modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "$categoryTitle ($percentage%)",
-                fontFamily = fonts,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 12.sp
-            )
-            Text(
-                text = amount,
-                fontFamily = fonts,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 12.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(5.dp))
-
-        LinearProgressIndicator(
-            progress = progress,
-            color = Emerald500,
-            trackColor = MaterialTheme.colorScheme.secondary,
-            modifier = modifier
-                .fillMaxWidth()
-                .height(10.dp)
-                .clip(RoundedCornerShape(10.dp))
-        )
     }
 }
