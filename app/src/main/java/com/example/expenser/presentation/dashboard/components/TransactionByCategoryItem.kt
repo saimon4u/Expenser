@@ -25,7 +25,8 @@ fun TransactionByCategoryItem(
     percentage: String,
     amount: String,
     progress: Float,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    moneyIcon: String? = null
 ){
     Column(
         modifier = modifier
@@ -42,7 +43,7 @@ fun TransactionByCategoryItem(
                 fontSize = 12.sp
             )
             Text(
-                text = amount,
+                text = "$amount $moneyIcon",
                 fontFamily = fonts,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 12.sp

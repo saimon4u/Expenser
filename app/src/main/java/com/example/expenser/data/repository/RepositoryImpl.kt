@@ -20,13 +20,13 @@ class RepositoryImpl @Inject constructor(
     override suspend fun addTransaction(transaction: Transaction) {
         val document = database.collection(DatabasePath.Transaction.path).document(transaction.userId).collection(transaction.type).document()
         transaction.transactionId = document.id
-        document.set(transaction)
+        document.set(transaction).await()
     }
 
     override suspend fun addCategory(category: Category) {
         val document = database.collection(DatabasePath.Category.path).document(category.userId).collection(category.type).document()
         category.categoryId = document.id
-        document.set(category)
+        document.set(category).await()
     }
 
     override suspend fun getCategoryListByType(userId: String, type: TransactionType): Flow<Resource<List<Category>>> {
@@ -136,7 +136,41 @@ class RepositoryImpl @Inject constructor(
     override suspend fun updateUserSettings(userId: String, currency: Currency) {
         val document = database.collection(DatabasePath.UserSettings.path).document(userId)
         val settings = UserSettings(userId, currency)
-        document.set(settings)
+        document.set(settings).await()
+    }
+
+    override suspend fun getUserSettings(userId: String): Flow<Resource<UserSettings>> {
+        return flow {
+            emit(Resource.Loading(true))
+
+            var result = true
+            var settings: UserSettings? = null
+
+            database.collection(DatabasePath.UserSettings.path)
+                .document(userId)
+                .get()
+                .addOnSuccessListener{
+                    settings = it.toObject(UserSettings::class.java)
+                    result = true
+                }
+                .addOnFailureListener{
+                    result = false
+                }
+                .await()
+
+            emit(Resource.Loading(false))
+            if(result){
+                emit(Resource.Success(settings))
+            }else{
+                emit(Resource.Error("Error fetching user settings"))
+            }
+        }
+    }
+
+    override suspend fun deleteCategory(userId: String, category: Category) {
+        database.collection(DatabasePath.Category.path).document(userId).collection(category.type).document(category.categoryId)
+            .delete()
+            .await()
     }
 
 }

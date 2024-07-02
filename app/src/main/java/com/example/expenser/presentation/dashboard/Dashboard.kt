@@ -85,6 +85,7 @@ fun Dashboard(
         dashboardViewModel.getAllTransaction(dashboardState.userData!!.userId)
         dashboardViewModel.getCategoriesByType(dashboardState.userData.userId, TransactionType.Income)
         dashboardViewModel.getCategoriesByType(dashboardState.userData.userId, TransactionType.Expense)
+        dashboardViewModel.getUserSettings(dashboardState.userData.userId)
     }
 
 

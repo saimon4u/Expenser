@@ -35,10 +35,6 @@ class DashboardViewModel @Inject constructor(
                 )
             }
         }
-//        getBalance()
-//        getAllTransaction(user!!.userId)
-//        getCategoriesByType(user.userId, TransactionType.Income)
-//        getCategoriesByType(user.userId, TransactionType.Expense)
     }
 
 
@@ -57,7 +53,6 @@ class DashboardViewModel @Inject constructor(
             repository.getAllTransaction(userId).collectLatest { result->
                 when(result){
                     is Resource.Error -> {
-                        debug(result.message.toString())
                         _dashboardState.update {
                             it.copy(
                                 showSnackbar = true,
@@ -89,7 +84,6 @@ class DashboardViewModel @Inject constructor(
             repository.getCategoryListByType(userId, type).collectLatest{ result->
                 when(result){
                     is Resource.Error -> {
-                        debug(result.message.toString())
                         _dashboardState.update {
                             it.copy(
                                 showSnackbar = true,
@@ -187,6 +181,32 @@ class DashboardViewModel @Inject constructor(
                         _dashboardState.update {
                             it.copy(
                                 expenseBalance = result.data ?: 0.0
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun getUserSettings(userId: String){
+        viewModelScope.launch {
+            repository.getUserSettings(userId).collectLatest {result->
+                when(result){
+                    is Resource.Error -> {
+                        debug("Error Fetching User Settings")
+                    }
+                    is Resource.Loading -> {
+                        _dashboardState.update {
+                            it.copy(
+                                isLoading = result.isLoading
+                            )
+                        }
+                    }
+                    is Resource.Success -> {
+                        _dashboardState.update {
+                            it.copy(
+                                userSettings = result.data
                             )
                         }
                     }

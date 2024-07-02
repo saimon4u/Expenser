@@ -1,4 +1,4 @@
-package com.example.expenser.presentation.splash.components
+package com.example.expenser.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.expenser.domain.model.Currency
+import com.example.expenser.presentation.splash.components.currencyList
 import com.example.expenser.ui.theme.fonts
 
 @OptIn(ExperimentalMaterial3Api::class)

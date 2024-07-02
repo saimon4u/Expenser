@@ -35,7 +35,8 @@ fun BalanceBox(
     transactionType: String,
     icon: ImageVector,
     bgColor: Color,
-    iconTint: Color
+    iconTint: Color,
+    moneyIcon: String? = null
 ){
     Box(
         modifier = modifier
@@ -77,7 +78,7 @@ fun BalanceBox(
                 )
 
                 Text(
-                    text = balance.toString(),
+                    text = "$balance $moneyIcon",
                     fontFamily = fonts,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 17.sp,

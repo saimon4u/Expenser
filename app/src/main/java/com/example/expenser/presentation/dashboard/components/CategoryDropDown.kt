@@ -38,10 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.expenser.domain.model.Category
+import com.example.expenser.presentation.components.CreateCategoryDialog
 import com.example.expenser.util.TransactionType
 import com.example.expenser.presentation.dashboard.DashboardState
-import com.example.expenser.util.CreateCategoryErrors
-import com.example.expenser.util.validateCategoryName
 import com.example.expenser.ui.theme.fonts
 
 
@@ -59,91 +58,29 @@ fun CategoryDropDown(
     showSnackbar: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var categoryTextBoxOpen by remember { mutableStateOf(false) }
+    var createCategoryDialogOpen by remember { mutableStateOf(false) }
     var categoryNameVal by remember { mutableStateOf("") }
-    var validationError by remember { mutableStateOf<CreateCategoryErrors?>(null) }
     val categoryList = if(transactionType == TransactionType.Expense) dashboardState.expenseCategoryList else dashboardState.incomeCategoryList
     var categoryListDialogOpen by remember {
         mutableStateOf(false)
     }
 
-    if(categoryTextBoxOpen){
-        Dialog(
-            onDismissRequest = { categoryTextBoxOpen = false }
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(250.dp)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(16.dp),
-            ){
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    DialogTitle(
-                        modifier = Modifier.fillMaxWidth(),
-                        transactionType = transactionType,
-                        valueType = " category"
-                    )
-
-                    Spacer(modifier = Modifier.height(15.dp))
-
-                    FormTextField(
-                        text = categoryNameVal,
-                        onValueChange = {
-                            validationError = null
-                            categoryNameVal = it
-                        },
-                        label = "Category Name",
-                    )
-                    
-                    Spacer(modifier = Modifier.height(15.dp))
-
-                    Button(
-                        onClick ={
-                            validationError = validateCategoryName(categoryNameVal, categoryList)
-
-                            when(validationError){
-                                is CreateCategoryErrors.ContainNumberError -> showSnackbar("Can't contain number or special char!")
-                                is CreateCategoryErrors.DuplicateError -> showSnackbar("Category already exists!")
-                                is CreateCategoryErrors.InternetError -> showSnackbar("Check your network connection!")
-                                is CreateCategoryErrors.BlackNameError -> showSnackbar("Category can't be blank!")
-                                is CreateCategoryErrors.LongNameError -> showSnackbar("Char limit is: 10!")
-                                null -> {
-                                    onCategoryCreate(
-                                        Category(
-                                            createdAt = System.currentTimeMillis(),
-                                            name = categoryNameVal,
-                                            userId = dashboardState.userData?.userId ?: "",
-                                            type = transactionType.type
-                                        )
-                                    )
-                                    showSnackbar("Category created!")
-                                    categoryTextBoxOpen = false
-                                    categoryNameVal = ""
-                                }
-                            }
-                        },
-                        shape = RoundedCornerShape(5.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Create",
-                            fontFamily = fonts,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                }
-            }
-        }
+    if(createCategoryDialogOpen){
+        CreateCategoryDialog(
+            onDismissRequest = { createCategoryDialogOpen = false },
+            transactionType = transactionType,
+            categoryNameVal = categoryNameVal,
+            onCategoryNameChange = {
+                categoryNameVal = it
+            },
+            categoryList = categoryList,
+            showSnackbar = showSnackbar,
+            onCategoryCreate = {
+                onCategoryCreate(it)
+                createCategoryDialogOpen = false
+            },
+            userId = dashboardState.userData!!.userId
+        )
     }
 
     if(categoryListDialogOpen){
@@ -171,7 +108,7 @@ fun CategoryDropDown(
                     modifier = Modifier
                         .fillMaxWidth(),
                     onClick = {
-                        categoryTextBoxOpen = true
+                        createCategoryDialogOpen = true
                         categoryListDialogOpen = false
                     },
                     shape = RoundedCornerShape(5.dp),
@@ -276,104 +213,4 @@ fun CategoryDropDown(
             tint = MaterialTheme.colorScheme.onSecondary
         )
     }
-
-//    ExposedDropdownMenuBox(
-//        expanded = expanded,
-//        onExpandedChange = { expanded = !expanded },
-//    ) {
-//        OutlinedButton(
-//            onClick = {
-//                expanded = true
-//                getAllCategories(dashboardState.userData!!.userId, transactionType)
-//            },
-//            shape = RoundedCornerShape(5.dp),
-//            colors = ButtonDefaults.buttonColors(
-//                containerColor = MaterialTheme.colorScheme.secondary
-//            ),
-//            modifier = Modifier
-//                .fillMaxWidth(.9f)
-//                .menuAnchor()
-//        ) {
-//            Text(
-//                text = selectedValue,
-//                fontFamily = fonts,
-//                fontSize = 10.sp,
-//                fontWeight = FontWeight.SemiBold,
-//                color = selectedValueColor
-//            )
-//            Spacer(modifier = Modifier.width(5.dp))
-//            Icon(
-//                imageVector = Icons.Rounded.ArrowDropDown,
-//                contentDescription = "Select Date",
-//                tint = MaterialTheme.colorScheme.onSecondary
-//            )
-//        }
-//
-//        ExposedDropdownMenu(
-//            expanded = expanded,
-//            onDismissRequest = { expanded = false },
-//        ) {
-//            DropdownMenuItem(
-//                leadingIcon = {
-//                    Icon(
-//                        imageVector = Icons.Rounded.AddCircleOutline,
-//                        contentDescription = "Create Category"
-//                    )
-//                },
-//                text = {
-//                       Text(text = "Create")
-//                },
-//                onClick = { categoryTextBoxOpen = true }
-//            )
-//
-//            if(categoryList.isEmpty()){
-//                DropdownMenuItem(
-//                    text = {
-//                        Box (
-//                            modifier = modifier
-//                                .fillMaxWidth(),
-//                            contentAlignment = Alignment.Center
-//                        ){
-//                            Text(
-//                                text = "No Category",
-//                                fontFamily = fonts,
-//                                fontSize = 10.sp,
-//                                fontWeight = FontWeight.Light,
-//                                color = MaterialTheme.colorScheme.onSurface,
-//                                textAlign = TextAlign.Center
-//                            )
-//                        }
-//                    },
-//                    onClick = {
-//                        debug("Create Category")
-//                    }
-//                )
-//            }
-//
-//            categoryList.forEach { option ->
-//                DropdownMenuItem(
-//                    text = {
-//                        Box(
-//                            modifier = modifier
-//                                .fillMaxWidth(),
-//                            contentAlignment = Alignment.Center
-//                        ){
-//                            Text(
-//                                text = option.name,
-//                                fontFamily = fonts,
-//                                fontSize = 12.sp,
-//                                fontWeight = FontWeight.SemiBold,
-//                                color = MaterialTheme.colorScheme.onSurface,
-//                                textAlign = TextAlign.Center
-//                            )
-//                        }
-//                    },
-//                    onClick = {
-//                        expanded = false
-//                        onValueChangedEvent(option.name)
-//                    }
-//                )
-//            }
-//        }
-//    }
 }

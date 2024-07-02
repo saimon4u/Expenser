@@ -33,6 +33,7 @@ fun TransactionByCategoryBox(
     heading: String,
     totalAmount: Double,
     getAmount: (Category) -> Double,
+    moneyIcon: String? = null
 ){
     Column(
         modifier = modifier
@@ -85,7 +86,8 @@ fun TransactionByCategoryBox(
                     categoryTitle = it.name,
                     percentage = String.format("%.2f", p*100),
                     amount = String.format("%.2f", getAmount(it)),
-                    progress = p.toFloat()
+                    progress = p.toFloat(),
+                    moneyIcon = moneyIcon
                 )
             }
 

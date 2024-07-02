@@ -2,6 +2,7 @@ package com.example.expenser.presentation.dashboard
 
 import com.example.expenser.domain.model.Category
 import com.example.expenser.domain.model.Transaction
+import com.example.expenser.domain.model.UserSettings
 import com.example.expenser.presentation.sign_in.UserData
 import com.example.expenser.util.TransactionType
 
@@ -19,5 +20,6 @@ data class DashboardState(
     val incomeBalance: Double = 0.0,
     val expenseBalance: Double = 0.0,
     val categoryFetchingError: Boolean = false,
-    val categoryErrorType: TransactionType = TransactionType.Income
+    val categoryErrorType: TransactionType = TransactionType.Income,
+    val userSettings: UserSettings? = null
 )

@@ -35,6 +35,7 @@ import com.example.expenser.ui.theme.Red500
 import com.example.expenser.ui.theme.fonts
 import com.example.expenser.util.TransactionType
 import com.example.expenser.util.convertMillisToDate
+import com.example.expenser.util.debug
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -83,6 +84,7 @@ fun Overview(
         }
     }
 
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -117,7 +119,8 @@ fun Overview(
                     transactionType = "Income",
                     icon = Icons.Default.TrendingUp,
                     iconTint = Color.Green,
-                    bgColor = Emerald500
+                    bgColor = Emerald500,
+                    moneyIcon = dashboardState.userSettings?.currency?.icon
                 )
             },
         )
@@ -132,7 +135,8 @@ fun Overview(
                     transactionType = "Expense",
                     iconTint = Color.Red,
                     icon = Icons.Default.TrendingDown,
-                    bgColor = Red500
+                    bgColor = Red500,
+                    moneyIcon = dashboardState.userSettings?.currency?.icon
                 )
             },
         )
@@ -147,7 +151,8 @@ fun Overview(
                     transactionType = "Balance",
                     icon = Icons.Default.Wallet,
                     iconTint = Color.White,
-                    bgColor = Purple40
+                    bgColor = Purple40,
+                    moneyIcon = dashboardState.userSettings?.currency?.icon
                 )
             },
         )
@@ -173,7 +178,8 @@ fun Overview(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(250.dp)
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = 8.dp),
+                    moneyIcon = dashboardState.userSettings?.currency?.icon
                 )
             },
             modifier = Modifier
@@ -203,7 +209,8 @@ fun Overview(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(250.dp)
-                        .padding(horizontal = 8.dp)
+                        .padding(horizontal = 8.dp),
+                    moneyIcon = dashboardState.userSettings?.currency?.icon
                 )
             },
             modifier = Modifier
