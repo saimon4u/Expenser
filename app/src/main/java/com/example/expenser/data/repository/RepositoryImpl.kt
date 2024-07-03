@@ -8,7 +8,6 @@ import com.example.expenser.domain.repository.Repository
 import com.example.expenser.util.DatabasePath
 import com.example.expenser.util.Resource
 import com.example.expenser.util.TransactionType
-import com.example.expenser.util.debug
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.flow.Flow
@@ -78,7 +77,6 @@ class RepositoryImpl @Inject constructor(
                     for (document in it) {
                         val transaction = document.toObject(Transaction::class.java)
                         transactionList.add(transaction)
-                        debug("start: $startDate end: $endDate actual: ${transaction.date} type: ${transaction.type}")
                     }
                 }
                 .addOnFailureListener {
@@ -96,7 +94,6 @@ class RepositoryImpl @Inject constructor(
                     for (document in it) {
                         val transaction = document.toObject(Transaction::class.java)
                         transactionList.add(transaction)
-                        debug("start: $startDate end: $endDate actual: ${transaction.date} type: ${transaction.type}")
                     }
                 }
                 .addOnFailureListener {
@@ -110,34 +107,6 @@ class RepositoryImpl @Inject constructor(
             }else{
                 emit(Resource.Error("Error fetching transaction list"))
             }
-        }
-    }
-
-    override suspend fun getBalance(userId: String, balanceType: String): Flow<Resource<Double>> {
-        return flow {
-
-            var balance = 0.0
-            var result = true
-            emit(Resource.Loading(true))
-
-            database.collection(DatabasePath.Transaction.path)
-                .document(userId)
-                .collection(balanceType)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
-                .get()
-                .addOnSuccessListener {
-                    for (document in it) {
-                        balance += document.get("amount") as Double
-                    }
-                }
-                .addOnFailureListener {
-                    result = false
-                }
-                .await()
-
-            emit(Resource.Loading(false))
-            if(result) emit(Resource.Success(data = balance))
-            else emit(Resource.Error("Error getting balance"))
         }
     }
 

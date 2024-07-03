@@ -102,22 +102,12 @@ fun Overview(
         }
     }
 
-    LaunchedEffect(key1 = selectedStartDate, key2 = selectedEndDate) {
+    LaunchedEffect(key1 = selectedStartDate, key2 = selectedEndDate, key3 = dashboardState.isTransactionCreated) {
         getAllTransaction(
             dashboardState.userData!!.userId,
             selectedStartDate.convertDateToMillis(),
             selectedEndDate.convertDateToMillis()
         )
-    }
-
-    LaunchedEffect(key1 = dashboardState.isTransactionCreated) {
-        if(dashboardState.isTransactionCreated){
-            getAllTransaction(
-                dashboardState.userData!!.userId,
-                selectedStartDate.convertDateToMillis(),
-                selectedEndDate.convertDateToMillis()
-            )
-        }
     }
 
     LaunchedEffect(key1 = dashboardState.isTransactionFetching) {

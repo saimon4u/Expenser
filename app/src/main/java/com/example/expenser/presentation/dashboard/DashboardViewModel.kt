@@ -151,47 +151,6 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun getBalance(){
-//        viewModelScope.launch {
-//            repository.getBalance(_dashboardState.value.userData!!.userId, TransactionType.Income.type).collectLatest {result->
-//                when(result){
-//                    is Resource.Error -> TODO()
-//                    is Resource.Loading -> {
-//                        _dashboardState.update {
-//                            it.copy(
-//                                isBalanceFetching = result.isLoading
-//                            )
-//                        }
-//                    }
-//                    is Resource.Success -> {
-//                        _dashboardState.update {
-//                            it.copy(
-//                                incomeBalance = result.data ?: 0.0
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-//
-//            repository.getBalance(_dashboardState.value.userData!!.userId, TransactionType.Expense.type).collectLatest {result->
-//                when(result){
-//                    is Resource.Error -> TODO()
-//                    is Resource.Loading -> {
-//                        _dashboardState.update {
-//                            it.copy(
-//                                isBalanceFetching = result.isLoading
-//                            )
-//                        }
-//                    }
-//                    is Resource.Success -> {
-//                        _dashboardState.update {
-//                            it.copy(
-//                                expenseBalance = result.data ?: 0.0
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-//        }
         viewModelScope.launch {
             _dashboardState.update {
                 it.copy(

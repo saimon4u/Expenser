@@ -14,7 +14,6 @@ interface Repository {
     suspend fun addCategory(category: Category)
     suspend fun getCategoryListByType(userId: String, type: TransactionType): Flow<Resource<List<Category>>>
     suspend fun getAllTransaction(userId: String, startDate: Long, endDate: Long): Flow<Resource<List<Transaction>>>
-    suspend fun getBalance(userId: String, balanceType: String): Flow<Resource<Double>>
     suspend fun updateUserSettings(userId: String, currency: Currency)
     suspend fun getUserSettings(userId: String): Flow<Resource<UserSettings>>
     suspend fun deleteCategory(userId: String, category: Category)
