@@ -30,6 +30,7 @@ import com.example.expenser.domain.model.Category
 import com.example.expenser.ui.theme.Emerald500
 import com.example.expenser.ui.theme.Red500
 import com.example.expenser.ui.theme.fonts
+import com.example.expenser.util.debug
 
 @Composable
 fun TransactionByCategoryBox(
@@ -96,10 +97,11 @@ fun TransactionByCategoryBox(
                     count += 1
                     TransactionByCategoryItem(
                         categoryTitle = it.name,
+                        categoryIcon = it.categoryIcon,
                         percentage = String.format("%.2f", p * 100),
                         amount = String.format("%.2f", getAmount(it)),
                         progress = p.toFloat(),
-                        moneyIcon = moneyIcon
+                        moneyIcon = moneyIcon,
                     )
                 }
             }

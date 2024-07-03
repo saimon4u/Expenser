@@ -5,5 +5,6 @@ data class Category(
     val name: String = "",
     val userId: String = "",
     val type: String = "",
-    var categoryId: String = ""
+    var categoryId: String = "",
+    val categoryIcon: String = "",
 )

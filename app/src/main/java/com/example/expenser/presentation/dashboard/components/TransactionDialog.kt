@@ -175,7 +175,7 @@ fun TransactionDialog(
                     },
                     dashboardState = dashboardState,
                     onCategoryCreate = {
-                        selectedCategoryName.value = it.name
+                        selectedCategoryName.value = "${it.categoryIcon} ${it.name}"
                         onCategoryCreate(it)
                     },
                     transactionType = transactionType,
@@ -195,7 +195,7 @@ fun TransactionDialog(
                 modifier = Modifier
                     .fillMaxWidth(),
                 onClick = {
-                    validationError = validateTransaction(amountVal, selectedCategoryName.value, dateButtonText)
+                    validationError = validateTransaction(amountVal, selectedCategoryName.value.substringAfter(" "), dateButtonText)
                     when(validationError){
                         is CreateTransactionErrors.AmountError -> showSnackbar("Amount can't be 0.0!")
                         CreateTransactionErrors.CategorySelectError -> showSnackbar("Select a category!")
@@ -210,7 +210,7 @@ fun TransactionDialog(
                                     date = datePickerState.selectedDateMillis ?: 0L,
                                     userId = dashboardState.userData!!.userId,
                                     type = transactionType.type,
-                                    category = selectedCategoryName.value
+                                    category = selectedCategoryName.value.substringAfter(" ")
                                 )
                             )
                             selectedCategoryName.value = ""

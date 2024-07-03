@@ -48,6 +48,9 @@ fun CategoryBoxHeader(
 
     var createCategoryDialogOpen by remember { mutableStateOf(false) }
     var categoryNameVal by remember { mutableStateOf("") }
+    var categoryIconVal by remember {
+        mutableStateOf("")
+    }
 
     if(createCategoryDialogOpen){
         CreateCategoryDialog(
@@ -63,7 +66,11 @@ fun CategoryBoxHeader(
                 onCategoryCreate(it, userId)
                 createCategoryDialogOpen = false
             },
-            userId = userId
+            userId = userId,
+            categoryIconVal = categoryIconVal,
+            onCategoryIconChange = {
+                categoryIconVal = it
+            }
         )
     }
 

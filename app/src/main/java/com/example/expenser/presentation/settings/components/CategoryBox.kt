@@ -119,7 +119,7 @@ fun CategoryBox(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = it.name,
+                            text = "${it.categoryIcon} ${it.name}",
                             fontFamily = fonts,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.SemiBold,

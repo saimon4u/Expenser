@@ -39,6 +39,8 @@ fun CreateCategoryDialog(
     onDismissRequest: () -> Unit,
     transactionType: TransactionType,
     categoryNameVal: String,
+    categoryIconVal: String,
+    onCategoryIconChange: (String) -> Unit,
     onCategoryNameChange: (String) -> Unit,
     categoryList: List<Category>,
     showSnackbar: (String) -> Unit,
@@ -52,7 +54,7 @@ fun CreateCategoryDialog(
     ) {
         Box(
             modifier = Modifier
-                .size(250.dp)
+                .size(300.dp)
                 .clip(RoundedCornerShape(20.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(16.dp),
@@ -81,9 +83,23 @@ fun CreateCategoryDialog(
 
                 Spacer(modifier = Modifier.height(15.dp))
 
+                FormTextField(
+                    text = categoryIconVal,
+                    onValueChange = {
+                        onCategoryIconChange(it)
+                        validationError = null
+                    },
+                    label = "Category Icon",
+                    placeholder = "Please Select an emoji..."
+                )
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+
+
                 Button(
                     onClick ={
-                        validationError = validateCategoryName(categoryNameVal, categoryList)
+                        validationError = validateCategoryName(categoryNameVal, categoryList, categoryIconVal)
 
                         when(validationError){
                             is CreateCategoryErrors.ContainNumberError -> showSnackbar("Can't contain number or special char!")
@@ -91,18 +107,21 @@ fun CreateCategoryDialog(
                             is CreateCategoryErrors.InternetError -> showSnackbar("Check your network connection!")
                             is CreateCategoryErrors.BlackNameError -> showSnackbar("Category can't be blank!")
                             is CreateCategoryErrors.LongNameError -> showSnackbar("Char limit is: 10!")
+                            is CreateCategoryErrors.WrongEmojiError -> showSnackbar("This emoji is not supported!")
                             null -> {
                                 onCategoryCreate(
                                     Category(
                                         createdAt = System.currentTimeMillis(),
                                         name = categoryNameVal,
                                         userId = userId,
-                                        type = transactionType.type
+                                        type = transactionType.type,
+                                        categoryIcon = categoryIconVal
                                     )
                                 )
                                 showSnackbar("Category created!")
                                 onCategoryNameChange("")
                             }
+
                         }
                     },
                     shape = RoundedCornerShape(5.dp),

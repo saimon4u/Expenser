@@ -6,4 +6,5 @@ sealed class CreateCategoryErrors{
     data object BlackNameError: CreateCategoryErrors()
     data object LongNameError: CreateCategoryErrors()
     data object InternetError: CreateCategoryErrors()
+    data object WrongEmojiError: CreateCategoryErrors()
 }

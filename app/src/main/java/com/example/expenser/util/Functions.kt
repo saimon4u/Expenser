@@ -154,12 +154,21 @@ private fun isInternetAvailable(context: Context): Boolean {
 }
 
 
-fun validateCategoryName(name: String, list: List<Category>): CreateCategoryErrors?{
+fun validateCategoryName(name: String, list: List<Category>, input: String): CreateCategoryErrors?{
     if(name.isBlank()) return CreateCategoryErrors.BlackNameError
     if(!name.matches(regex = Regex("^[a-zA-Z&._-]+\$"))) return CreateCategoryErrors.ContainNumberError
     if(name.length > 10) return CreateCategoryErrors.LongNameError
     if(list.map { it.name }.contains(name)) return CreateCategoryErrors.DuplicateError(name)
     if(!isInternetAvailable(App.getContext()!!)) return CreateCategoryErrors.InternetError
+    if(input.isBlank()) return CreateCategoryErrors.WrongEmojiError
+    val result = input.codePoints().allMatch { codePoint ->
+        val type = Character.getType(codePoint)
+        type.toByte() == Character.SURROGATE || type.toByte() == Character.OTHER_SYMBOL ||
+                (codePoint in 0x1F000..0x1F9FF) ||
+                (codePoint in 0x2600..0x26FF) ||
+                (codePoint in 0x2700..0x27BF)
+    }
+    if(!result) return CreateCategoryErrors.WrongEmojiError
     return null
 }
 

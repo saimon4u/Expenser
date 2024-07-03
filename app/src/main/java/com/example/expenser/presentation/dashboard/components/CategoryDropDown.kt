@@ -60,6 +60,7 @@ fun CategoryDropDown(
     var expanded by remember { mutableStateOf(false) }
     var createCategoryDialogOpen by remember { mutableStateOf(false) }
     var categoryNameVal by remember { mutableStateOf("") }
+    var categoryIconVal by remember { mutableStateOf("") }
     val categoryList = if(transactionType == TransactionType.Expense) dashboardState.expenseCategoryList else dashboardState.incomeCategoryList
     var categoryListDialogOpen by remember {
         mutableStateOf(false)
@@ -70,6 +71,10 @@ fun CategoryDropDown(
             onDismissRequest = { createCategoryDialogOpen = false },
             transactionType = transactionType,
             categoryNameVal = categoryNameVal,
+            categoryIconVal = categoryIconVal,
+            onCategoryIconChange = {
+                categoryIconVal = it
+            },
             onCategoryNameChange = {
                 categoryNameVal = it
             },
@@ -163,10 +168,11 @@ fun CategoryDropDown(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(5.dp))
                                 .background(MaterialTheme.colorScheme.background)
-                                .padding(5.dp)
+                                .padding(5.dp),
+                            contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = it.name,
+                                text = "${it.categoryIcon} ${it.name}",
                                 fontFamily = fonts,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.SemiBold,
@@ -176,7 +182,7 @@ fun CategoryDropDown(
                                     .clickable {
                                         categoryListDialogOpen = false
                                         expanded = false
-                                        onValueChangedEvent(it.name)
+                                        onValueChangedEvent("${it.categoryIcon} ${it.name}")
                                     }
                             )
                         }

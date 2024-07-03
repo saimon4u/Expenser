@@ -22,6 +22,7 @@ import com.example.expenser.ui.theme.fonts
 @Composable
 fun TransactionByCategoryItem(
     categoryTitle: String,
+    categoryIcon: String,
     percentage: String,
     amount: String,
     progress: Float,
@@ -37,7 +38,7 @@ fun TransactionByCategoryItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "$categoryTitle ($percentage%)",
+                text = "$categoryIcon $categoryTitle ($percentage%)",
                 fontFamily = fonts,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 12.sp
