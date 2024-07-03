@@ -15,6 +15,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +40,11 @@ fun TransactionByCategoryBox(
     getAmount: (Category) -> Double,
     moneyIcon: String? = null
 ){
+
+    var count by remember {
+        mutableIntStateOf(0)
+    }
+
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
@@ -61,7 +71,7 @@ fun TransactionByCategoryBox(
 
         Spacer(modifier = Modifier.height(10.dp))
         
-        if(categoryList.isEmpty()){
+        if(categoryList.isEmpty() || count == 0){
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -82,13 +92,16 @@ fun TransactionByCategoryBox(
             items(categoryList){
                 var p = ((getAmount(it))/totalAmount)
                 if(p.isNaN()) p = 0.0
-                TransactionByCategoryItem(
-                    categoryTitle = it.name,
-                    percentage = String.format("%.2f", p*100),
-                    amount = String.format("%.2f", getAmount(it)),
-                    progress = p.toFloat(),
-                    moneyIcon = moneyIcon
-                )
+                if(p != 0.0) {
+                    count += 1
+                    TransactionByCategoryItem(
+                        categoryTitle = it.name,
+                        percentage = String.format("%.2f", p * 100),
+                        amount = String.format("%.2f", getAmount(it)),
+                        progress = p.toFloat(),
+                        moneyIcon = moneyIcon
+                    )
+                }
             }
 
         }

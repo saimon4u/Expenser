@@ -29,7 +29,8 @@ import com.example.expenser.ui.theme.fonts
 fun CustomDateRangePicker(
     dateRangePickerState: DateRangePickerState,
     bottomSheetState: SheetState,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onDateSelect: () -> Unit
 ){
 
     ModalBottomSheet(
@@ -44,7 +45,7 @@ fun CustomDateRangePicker(
             ) {
                 ActualDateRangePicker(dateRangePickerState)
                 Button(
-                    onClick = onDismiss,
+                    onClick = onDateSelect,
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                     modifier = Modifier
                         .align(Alignment.BottomEnd)

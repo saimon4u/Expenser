@@ -81,9 +81,7 @@ fun Dashboard(
     }
 
     LaunchedEffect(key1 = Unit) {
-        dashboardViewModel.getBalance()
-        dashboardViewModel.getAllTransaction(dashboardState.userData!!.userId)
-        dashboardViewModel.getCategoriesByType(dashboardState.userData.userId, TransactionType.Income)
+        dashboardViewModel.getCategoriesByType(dashboardState.userData!!.userId, TransactionType.Income)
         dashboardViewModel.getCategoriesByType(dashboardState.userData.userId, TransactionType.Expense)
         dashboardViewModel.getUserSettings(dashboardState.userData.userId)
     }
@@ -143,7 +141,9 @@ fun Dashboard(
                 modifier = Modifier
                     .fillMaxWidth(),
                 dashboardState = dashboardState,
-                onCategoryFetchingError = dashboardViewModel::getCategoriesByType
+                onCategoryFetchingError = dashboardViewModel::getCategoriesByType,
+                getAllTransaction = dashboardViewModel::getAllTransaction,
+                getBalance = dashboardViewModel::getBalance
             )
         }
         SwipeableActionsBox(

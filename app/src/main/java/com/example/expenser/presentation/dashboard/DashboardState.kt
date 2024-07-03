@@ -13,7 +13,6 @@ data class DashboardState(
     val transactionList: List<Transaction> = emptyList(),
     val isLoading: Boolean = false,
     val showSnackbar: Boolean = false,
-    val isBalanceFetching: Boolean = true,
     val isCategoryFetching: Boolean = true,
     val isTransactionFetching: Boolean = true,
     val snackbarMessage: String = "",
@@ -21,5 +20,6 @@ data class DashboardState(
     val expenseBalance: Double = 0.0,
     val categoryFetchingError: Boolean = false,
     val categoryErrorType: TransactionType = TransactionType.Income,
-    val userSettings: UserSettings? = null
+    val userSettings: UserSettings? = null,
+    val isTransactionCreated: Boolean = false,
 )

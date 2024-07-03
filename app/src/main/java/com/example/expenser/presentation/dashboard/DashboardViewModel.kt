@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,9 +49,9 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    fun getAllTransaction(userId: String){
+    fun getAllTransaction(userId: String, startDate: Long, endDate: Long){
         viewModelScope.launch {
-            repository.getAllTransaction(userId).collectLatest { result->
+            repository.getAllTransaction(userId, startDate, endDate).collectLatest { result->
                 when(result){
                     is Resource.Error -> {
                         _dashboardState.update {
@@ -73,6 +74,7 @@ class DashboardViewModel @Inject constructor(
                                 transactionList = result.data ?: emptyList(),
                             )
                         }
+//                        debug(dashboardState.value.transactionList.size.toString())
                     }
                 }
             }
@@ -122,8 +124,11 @@ class DashboardViewModel @Inject constructor(
     fun onTransactionCreate(transaction: Transaction){
         viewModelScope.launch {
             repository.addTransaction(transaction)
-            getAllTransaction(dashboardState.value.userData!!.userId)
-            getBalance()
+            _dashboardState.update {
+                it.copy(
+                    isTransactionCreated = !it.isTransactionCreated
+                )
+            }
         }
     }
 
@@ -146,45 +151,61 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun getBalance(){
+//        viewModelScope.launch {
+//            repository.getBalance(_dashboardState.value.userData!!.userId, TransactionType.Income.type).collectLatest {result->
+//                when(result){
+//                    is Resource.Error -> TODO()
+//                    is Resource.Loading -> {
+//                        _dashboardState.update {
+//                            it.copy(
+//                                isBalanceFetching = result.isLoading
+//                            )
+//                        }
+//                    }
+//                    is Resource.Success -> {
+//                        _dashboardState.update {
+//                            it.copy(
+//                                incomeBalance = result.data ?: 0.0
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//
+//            repository.getBalance(_dashboardState.value.userData!!.userId, TransactionType.Expense.type).collectLatest {result->
+//                when(result){
+//                    is Resource.Error -> TODO()
+//                    is Resource.Loading -> {
+//                        _dashboardState.update {
+//                            it.copy(
+//                                isBalanceFetching = result.isLoading
+//                            )
+//                        }
+//                    }
+//                    is Resource.Success -> {
+//                        _dashboardState.update {
+//                            it.copy(
+//                                expenseBalance = result.data ?: 0.0
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//        }
         viewModelScope.launch {
-            repository.getBalance(_dashboardState.value.userData!!.userId, TransactionType.Income.type).collectLatest {result->
-                when(result){
-                    is Resource.Error -> TODO()
-                    is Resource.Loading -> {
-                        _dashboardState.update {
-                            it.copy(
-                                isBalanceFetching = result.isLoading
-                            )
-                        }
-                    }
-                    is Resource.Success -> {
-                        _dashboardState.update {
-                            it.copy(
-                                incomeBalance = result.data ?: 0.0
-                            )
-                        }
-                    }
-                }
-            }
-
-            repository.getBalance(_dashboardState.value.userData!!.userId, TransactionType.Expense.type).collectLatest {result->
-                when(result){
-                    is Resource.Error -> TODO()
-                    is Resource.Loading -> {
-                        _dashboardState.update {
-                            it.copy(
-                                isBalanceFetching = result.isLoading
-                            )
-                        }
-                    }
-                    is Resource.Success -> {
-                        _dashboardState.update {
-                            it.copy(
-                                expenseBalance = result.data ?: 0.0
-                            )
-                        }
-                    }
-                }
+            _dashboardState.update {
+                it.copy(
+                    incomeBalance = it.transactionList.filter {transaction->
+                        transaction.type == TransactionType.Income.type
+                    }.sumOf { trans->
+                        trans.amount
+                    },
+                    expenseBalance = it.transactionList.filter {transaction->
+                        transaction.type == TransactionType.Expense.type
+                    }.sumOf { trans->
+                        trans.amount
+                    },
+                )
             }
         }
     }

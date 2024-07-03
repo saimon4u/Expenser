@@ -1,5 +1,6 @@
 package com.example.expenser.presentation.dashboard.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +26,7 @@ import com.example.expenser.util.convertMillisToDate
 fun ActualDateRangePicker(state: DateRangePickerState){
     DateRangePicker(
         state = state,
-        modifier = Modifier,
+        modifier = Modifier.background(MaterialTheme.colorScheme.background),
         dateFormatter = DatePickerFormatter("yy MM dd", "yy MM dd", "yy MM dd"),
         title = {
             Text(
@@ -34,7 +35,8 @@ fun ActualDateRangePicker(state: DateRangePickerState){
                     .padding(16.dp),
                 fontFamily = fonts,
                 fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
             )
         },
         headline = {
@@ -51,7 +53,8 @@ fun ActualDateRangePicker(state: DateRangePickerState){
                             text = it,
                             fontFamily = fonts,
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 13.sp
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
@@ -63,7 +66,8 @@ fun ActualDateRangePicker(state: DateRangePickerState){
                             text = it,
                             fontFamily = fonts,
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 13.sp
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
@@ -71,17 +75,17 @@ fun ActualDateRangePicker(state: DateRangePickerState){
         },
         showModeToggle = false,
         colors = DatePickerDefaults.colors(
-            containerColor = Color.White,
-            titleContentColor = Color.Black,
-            headlineContentColor = Color.Black,
-            weekdayContentColor = Color.Black,
-            subheadContentColor = Color.Black,
-            yearContentColor = Color.Black,
-            currentYearContentColor = Color.Green,
-            selectedYearContainerColor = Color.Black,
-            disabledDayContentColor = Color.Gray,
+            containerColor = MaterialTheme.colorScheme.onBackground,
+            titleContentColor = MaterialTheme.colorScheme.onBackground,
+            headlineContentColor = MaterialTheme.colorScheme.onBackground,
+            weekdayContentColor = MaterialTheme.colorScheme.onBackground,
+            subheadContentColor = MaterialTheme.colorScheme.onBackground,
+            yearContentColor = MaterialTheme.colorScheme.onBackground,
+            currentYearContentColor = MaterialTheme.colorScheme.onBackground,
+            selectedYearContainerColor = Color.Green,
+            disabledDayContentColor = MaterialTheme.colorScheme.surface,
             todayDateBorderColor = MaterialTheme.colorScheme.primary,
-            dayInSelectionRangeContainerColor = MaterialTheme.colorScheme.tertiary,
+            dayInSelectionRangeContainerColor = MaterialTheme.colorScheme.secondary,
             dayInSelectionRangeContentColor = MaterialTheme.colorScheme.onTertiary,
             selectedDayContainerColor = MaterialTheme.colorScheme.tertiary
         )

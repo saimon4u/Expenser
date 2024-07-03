@@ -34,17 +34,22 @@ import com.example.expenser.ui.theme.Purple40
 import com.example.expenser.ui.theme.Red500
 import com.example.expenser.ui.theme.fonts
 import com.example.expenser.util.TransactionType
+import com.example.expenser.util.convertDateToMillis
 import com.example.expenser.util.convertMillisToDate
 import com.example.expenser.util.debug
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import java.util.Date
+import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Overview(
     modifier: Modifier = Modifier,
     dashboardState: DashboardState,
-    onCategoryFetchingError: (String, TransactionType) -> Unit
+    onCategoryFetchingError: (String, TransactionType) -> Unit,
+    getAllTransaction: (String, Long, Long) -> Unit,
+    getBalance: () -> Unit
 ){
 
     val dateRangePickerState = rememberDateRangePickerState()
@@ -52,11 +57,15 @@ fun Overview(
     val scope = rememberCoroutineScope()
 
     var selectedStartDate by remember {
-        mutableStateOf(Calendar.getInstance().apply { set(Calendar.DAY_OF_MONTH, 1) }.timeInMillis.convertMillisToDate())
+        mutableStateOf(Calendar.getInstance(TimeZone.getTimeZone("Asia/Dhaka")).apply { set(Calendar.DAY_OF_MONTH, 1) }.timeInMillis.convertMillisToDate())
     }
 
     var selectedEndDate by remember {
         mutableStateOf(System.currentTimeMillis().convertMillisToDate())
+    }
+
+    var rangeSelected by remember{
+        mutableStateOf(false)
     }
 
 
@@ -68,14 +77,23 @@ fun Overview(
                 scope.launch {
                     bottomSheetState.hide()
                 }
+            },
+            onDateSelect = {
+                rangeSelected = true
+                scope.launch {
+                    bottomSheetState.hide()
+                }
             }
         )
     }
 
 
-    LaunchedEffect(key1 = dateRangePickerState.selectedStartDateMillis, key2 = dateRangePickerState.selectedEndDateMillis) {
-        selectedStartDate = dateRangePickerState.selectedStartDateMillis?.convertMillisToDate() ?: selectedStartDate
-        selectedEndDate = dateRangePickerState.selectedEndDateMillis?.convertMillisToDate() ?: selectedEndDate
+    LaunchedEffect(key1 = rangeSelected) {
+        if(rangeSelected){
+            selectedStartDate = dateRangePickerState.selectedStartDateMillis?.convertMillisToDate() ?: selectedStartDate
+            selectedEndDate = dateRangePickerState.selectedEndDateMillis?.convertMillisToDate() ?: selectedEndDate
+            rangeSelected = false
+        }
     }
 
     LaunchedEffect(key1 = dashboardState.categoryFetchingError) {
@@ -84,6 +102,29 @@ fun Overview(
         }
     }
 
+    LaunchedEffect(key1 = selectedStartDate, key2 = selectedEndDate) {
+        getAllTransaction(
+            dashboardState.userData!!.userId,
+            selectedStartDate.convertDateToMillis(),
+            selectedEndDate.convertDateToMillis()
+        )
+    }
+
+    LaunchedEffect(key1 = dashboardState.isTransactionCreated) {
+        if(dashboardState.isTransactionCreated){
+            getAllTransaction(
+                dashboardState.userData!!.userId,
+                selectedStartDate.convertDateToMillis(),
+                selectedEndDate.convertDateToMillis()
+            )
+        }
+    }
+
+    LaunchedEffect(key1 = dashboardState.isTransactionFetching) {
+        if(!dashboardState.isTransactionFetching){
+            getBalance()
+        }
+    }
 
     Column(
         modifier = modifier
@@ -112,7 +153,7 @@ fun Overview(
         Spacer(modifier = Modifier.height(10.dp))
 
         BalanceView(
-            isLoading = dashboardState.isBalanceFetching,
+            isLoading = dashboardState.isTransactionFetching,
             contentAfterLoading = {
                 BalanceBox(
                     balance = dashboardState.incomeBalance,
@@ -128,7 +169,7 @@ fun Overview(
         Spacer(modifier = Modifier.height(10.dp))
 
         BalanceView(
-            isLoading = dashboardState.isBalanceFetching,
+            isLoading = dashboardState.isTransactionFetching,
             contentAfterLoading = {
                 BalanceBox(
                     balance = dashboardState.expenseBalance,
@@ -144,7 +185,7 @@ fun Overview(
         Spacer(modifier = Modifier.height(10.dp))
 
         BalanceView(
-            isLoading = dashboardState.isBalanceFetching,
+            isLoading = dashboardState.isTransactionFetching,
             contentAfterLoading = {
                 BalanceBox(
                     balance = dashboardState.incomeBalance - dashboardState.expenseBalance,
@@ -177,15 +218,13 @@ fun Overview(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(250.dp)
-                        .padding(horizontal = 8.dp),
+                        .height(250.dp),
                     moneyIcon = dashboardState.userSettings?.currency?.icon
                 )
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(250.dp)
-                .padding(horizontal = 8.dp)
         )
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -208,15 +247,13 @@ fun Overview(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(250.dp)
-                        .padding(horizontal = 8.dp),
+                        .height(250.dp),
                     moneyIcon = dashboardState.userSettings?.currency?.icon
                 )
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(250.dp)
-                .padding(horizontal = 8.dp)
         )
     }
 

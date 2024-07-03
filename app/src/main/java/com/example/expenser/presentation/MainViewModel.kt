@@ -34,6 +34,4 @@ class MainViewModel: ViewModel() {
     fun onDrawerClick(state: CustomDrawerState){
         _drawerState.update { state }
     }
-
-
 }

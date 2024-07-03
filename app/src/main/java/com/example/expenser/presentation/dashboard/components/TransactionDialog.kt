@@ -207,7 +207,7 @@ fun TransactionDialog(
                                     createdAt = System.currentTimeMillis(),
                                     amount = amountVal,
                                     description = descriptionVal,
-                                    date = Date(datePickerState.selectedDateMillis!!),
+                                    date = datePickerState.selectedDateMillis ?: 0L,
                                     userId = dashboardState.userData!!.userId,
                                     type = transactionType.type,
                                     category = selectedCategoryName.value

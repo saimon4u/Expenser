@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 @SuppressLint("UnnecessaryComposedModifier")
 fun Modifier.coloredShadow(
@@ -109,14 +110,28 @@ fun Modifier.shimmerEffect(): Modifier = composed {
 
 
 fun Long.convertMillisToDate(): String {
-    val calendar = Calendar.getInstance().apply {
+    val calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Dhaka")).apply {
         timeInMillis = this@convertMillisToDate
         val zoneOffset = get(Calendar.ZONE_OFFSET)
         val dstOffset = get(Calendar.DST_OFFSET)
         add(Calendar.MILLISECOND, -(zoneOffset + dstOffset))
     }
-    val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.US)
+    val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.US).apply {
+        timeZone = TimeZone.getTimeZone("Asia/Dhaka")
+    }
     return sdf.format(calendar.time)
+}
+
+fun String.convertDateToMillis(): Long {
+    val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.US).apply {
+        timeZone = TimeZone.getTimeZone("Asia/Dhaka")
+    }
+    val date = sdf.parse(this)
+    val calendar = Calendar.getInstance().apply {
+        timeInMillis = date?.time ?: 0L
+        add(Calendar.HOUR_OF_DAY, 6)
+    }
+    return calendar.timeInMillis
 }
 
 

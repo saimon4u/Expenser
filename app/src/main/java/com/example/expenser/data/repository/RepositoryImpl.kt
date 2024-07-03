@@ -8,11 +8,13 @@ import com.example.expenser.domain.repository.Repository
 import com.example.expenser.util.DatabasePath
 import com.example.expenser.util.Resource
 import com.example.expenser.util.TransactionType
+import com.example.expenser.util.debug
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 import javax.inject.Inject
 class RepositoryImpl @Inject constructor(
     private val database: FirebaseFirestore
@@ -58,7 +60,7 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAllTransaction(userId: String): Flow<Resource<List<Transaction>>> {
+    override suspend fun getAllTransaction(userId: String, startDate: Long, endDate: Long): Flow<Resource<List<Transaction>>> {
         return flow {
 
             val transactionList = mutableListOf<Transaction>()
@@ -68,12 +70,15 @@ class RepositoryImpl @Inject constructor(
             database.collection(DatabasePath.Transaction.path)
                 .document(userId)
                 .collection(TransactionType.Income.type)
+                .whereGreaterThanOrEqualTo("date", startDate)
+                .whereLessThanOrEqualTo("date", endDate + 500L)
                 .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener {
                     for (document in it) {
-                        val category = document.toObject(Transaction::class.java)
-                        transactionList.add(category)
+                        val transaction = document.toObject(Transaction::class.java)
+                        transactionList.add(transaction)
+                        debug("start: $startDate end: $endDate actual: ${transaction.date} type: ${transaction.type}")
                     }
                 }
                 .addOnFailureListener {
@@ -83,12 +88,15 @@ class RepositoryImpl @Inject constructor(
             database.collection(DatabasePath.Transaction.path)
                 .document(userId)
                 .collection(TransactionType.Expense.type)
+                .whereGreaterThanOrEqualTo("date", startDate)
+                .whereLessThanOrEqualTo("date", endDate + 500L)
                 .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener {
                     for (document in it) {
-                        val category = document.toObject(Transaction::class.java)
-                        transactionList.add(category)
+                        val transaction = document.toObject(Transaction::class.java)
+                        transactionList.add(transaction)
+                        debug("start: $startDate end: $endDate actual: ${transaction.date} type: ${transaction.type}")
                     }
                 }
                 .addOnFailureListener {
