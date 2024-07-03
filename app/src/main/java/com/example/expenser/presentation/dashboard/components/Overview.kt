@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.TrendingDown
 import androidx.compose.material.icons.filled.TrendingUp
@@ -28,6 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.expenser.presentation.components.CustomDateRangePicker
+import com.example.expenser.presentation.components.DateRangeView
 import com.example.expenser.presentation.dashboard.DashboardState
 import com.example.expenser.ui.theme.Emerald500
 import com.example.expenser.ui.theme.Purple40
@@ -36,10 +37,8 @@ import com.example.expenser.ui.theme.fonts
 import com.example.expenser.util.TransactionType
 import com.example.expenser.util.convertDateToMillis
 import com.example.expenser.util.convertMillisToDate
-import com.example.expenser.util.debug
 import kotlinx.coroutines.launch
 import java.util.Calendar
-import java.util.Date
 import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)

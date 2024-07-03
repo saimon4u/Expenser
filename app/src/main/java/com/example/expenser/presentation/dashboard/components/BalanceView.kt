@@ -30,7 +30,7 @@ fun BalanceView(
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(10.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .shimmerEffect(),
         ) {

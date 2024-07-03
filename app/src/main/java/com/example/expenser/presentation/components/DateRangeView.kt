@@ -1,4 +1,4 @@
-package com.example.expenser.presentation.dashboard.components
+package com.example.expenser.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,15 +29,16 @@ fun DateRangeView(
             .clickable {
                 onClick()
             }
-            .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.secondaryContainer)
-            .padding(vertical = 5.dp, horizontal = 10.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(vertical = 10.dp, horizontal = 16.dp)
     ){
         Text(
             text = selectedStartDate,
             fontFamily = fonts,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 14.sp
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.width(5.dp))
@@ -46,7 +47,8 @@ fun DateRangeView(
             text = "-",
             fontFamily = fonts,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 14.sp
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.width(5.dp))
@@ -55,7 +57,8 @@ fun DateRangeView(
             text = selectedEndDate,
             fontFamily = fonts,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 14.sp
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.width(10.dp))

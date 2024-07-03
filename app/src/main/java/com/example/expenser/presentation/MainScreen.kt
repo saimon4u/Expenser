@@ -50,7 +50,7 @@ import coil.compose.AsyncImage
 import com.example.expenser.R
 import com.example.expenser.domain.model.NavigationItem
 import com.example.expenser.presentation.dashboard.components.CustomDrawer
-import com.example.expenser.presentation.components.TransactionHistory
+import com.example.expenser.presentation.history.TransactionHistory
 import com.example.expenser.presentation.dashboard.Dashboard
 import com.example.expenser.presentation.settings.Settings
 import com.example.expenser.presentation.sign_in.UserData
@@ -189,7 +189,9 @@ fun Content(
                 NavigationItem.Dashboard -> Dashboard(
                     userData = userData
                 )
-                NavigationItem.History -> TransactionHistory()
+                NavigationItem.History -> TransactionHistory(
+                    userData = userData
+                )
                 NavigationItem.Settings -> Settings(
                     userData = userData
                 )
