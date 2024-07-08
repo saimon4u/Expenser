@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.expenser.domain.model.Category
 import com.example.expenser.presentation.components.CustomDateRangePicker
 import com.example.expenser.presentation.components.DateRangeView
 import com.example.expenser.presentation.components.Divider
@@ -36,6 +37,7 @@ import com.example.expenser.util.SortFilterItem
 import com.example.expenser.util.TransactionType
 import com.example.expenser.util.convertDateToMillis
 import com.example.expenser.util.convertMillisToDate
+import com.example.expenser.util.debug
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.TimeZone
@@ -78,6 +80,11 @@ fun TransactionHistory(
         historyViewModel.getCategoriesByType(userData.userId, TransactionType.Expense)
     }
 
+    LaunchedEffect(key1 = historyState.categoryFetchingError) {
+        if(historyState.categoryFetchingError) historyViewModel.getCategoriesByType(userData!!.userId, historyState.categoryErrorType)
+    }
+
+
     if (dateRangeSheetState.currentValue != SheetValue.Hidden){
         CustomDateRangePicker(
             dateRangePickerState = dateRangePickerState,
@@ -96,27 +103,44 @@ fun TransactionHistory(
         )
     }
 
+    var sortType by remember { mutableStateOf("category") }
 
-    val sortItemList = historyState.incomeCategoryList.map {
-        SortFilterItem(
-            name = it.name,
-            type = "category",
-            isSelected = false
-        )
-    } + historyState.expenseCategoryList.map {
-        SortFilterItem(
-            name = it.name,
-            type = "category",
-            isSelected = false
-        )
-    } + listOf(TransactionType.Income, TransactionType.Expense).map {
-        SortFilterItem(
-            name = it.type,
-            type = "transaction_type",
-            isSelected = false
+    var selectedTypes by remember {
+        mutableStateOf(
+            historyState.sortList.filter { it.type == "transaction_type" && it.isSelected }
         )
     }
-    var sortType by remember { mutableStateOf("category") }
+
+    var selectedCategory by remember {
+        mutableStateOf(
+            historyState.sortList.filter { it.type == "category" && it.isSelected }
+        )
+    }
+
+    LaunchedEffect(key1 = historyState.sortList) {
+        selectedTypes = historyState.sortList.filter { it.type == "transaction_type" && it.isSelected }
+        selectedCategory = historyState.sortList.filter { it.type == "category" && it.isSelected }
+    }
+
+    LaunchedEffect(key1 = selectedTypes) {
+        var categories: List<Category> = emptyList()
+        when(selectedTypes.size){
+            0 , 2-> categories = historyState.incomeCategoryList + historyState.expenseCategoryList
+            1 -> {
+                when(selectedTypes[0].name){
+                    "income" -> categories = historyState.incomeCategoryList
+                    "expense" -> categories = historyState.expenseCategoryList
+                }
+            }
+        }
+        historyViewModel.updateSortList(
+            selectedTypes,
+            categories
+        )
+    }
+
+
+
     if(filterSheetState.currentValue != SheetValue.Hidden){
         SortBottomSheet(
             sheetState = filterSheetState,
@@ -125,13 +149,13 @@ fun TransactionHistory(
                     filterSheetState.hide()
                 }
             },
-            sortFilterItems = sortItemList,
-            onItemClick = {
-                it.copy(
-                    isSelected = !it.isSelected
-                )
-            },
-            sortType = sortType
+            sortFilterItems = historyState.sortList,
+            onItemClick = historyViewModel::onSortItemClick,
+            sortType = sortType,
+            isLoading = historyState.isCategoryFetching || historyState.sortList.size == 2,
+            onClearClick = {
+                historyViewModel.onClearSelection(sortType)
+            }
         )
     }
 
@@ -161,7 +185,7 @@ fun TransactionHistory(
         )
         Divider()
         FilterSection(
-            sortFilterItems = sortItemList,
+            sortFilterItems = historyState.sortList,
             onTypeClick = {
                 sortType = "transaction_type"
                 scope.launch {
@@ -175,6 +199,8 @@ fun TransactionHistory(
                 }
             }
         )
+        
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 

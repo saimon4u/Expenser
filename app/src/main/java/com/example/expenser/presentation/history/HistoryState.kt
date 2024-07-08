@@ -2,6 +2,7 @@ package com.example.expenser.presentation.history
 
 import com.example.expenser.domain.model.Category
 import com.example.expenser.domain.model.Transaction
+import com.example.expenser.util.SortFilterItem
 import com.example.expenser.util.TransactionType
 
 data class HistoryState(
@@ -14,4 +15,5 @@ data class HistoryState(
     val categoryErrorType: TransactionType = TransactionType.Income,
     val showSnackbar: Boolean = false,
     val snackbarMessage: String = "",
+    val sortList: List<SortFilterItem> = emptyList()
 )

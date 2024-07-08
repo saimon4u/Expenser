@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -40,6 +42,7 @@ import com.example.expenser.presentation.history.HistoryState
 import com.example.expenser.ui.theme.fonts
 import com.example.expenser.util.SortFilterItem
 import com.example.expenser.util.TransactionType
+import com.example.expenser.util.debug
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,11 +52,23 @@ fun SortBottomSheet(
     sortFilterItems: List<SortFilterItem>,
     onItemClick: (SortFilterItem) -> Unit,
     sortType: String,
+    isLoading: Boolean,
+    onClearClick: () -> Unit
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         content = {
+            if (isLoading && sortType == "category"){
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ){
+                    CircularProgressIndicator()
+                }
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -70,40 +85,56 @@ fun SortBottomSheet(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
+                        item {
+                            Text(
+                                text = "Selected Items: ",
+                                fontFamily = fonts,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Light,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                        items(sortFilterItems.filter { it.isSelected && it.type == sortType }){item->
+                            Text(
+                                text = item.name,
+                                fontFamily = fonts,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Light,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    }
+                    LazyColumn{
                         items(sortFilterItems){
-                            if(it.isSelected && it.type == sortType){
-                                Text(
-                                    text = it.name,
-                                    fontFamily = fonts,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Light,
-                                    color = MaterialTheme.colorScheme.onBackground
+                            if(it.type == sortType){
+                                FilterSheetItem(
+                                    item = it,
+                                    onClick = onItemClick
                                 )
+                                Spacer(modifier = Modifier.height(10.dp))
                             }
                         }
                     }
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    Button(
+                        onClick = onClearClick,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(5.dp),
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                     ) {
-                        items(sortFilterItems){
-                            if(it.type == sortType){
-                                Box(
-                                    modifier = Modifier
-                                        .clickable {
-                                            onItemClick(it)
-                                        }
-                                ){
-                                    FilterSheetItem(
-                                        name = it.name.uppercase(),
-                                        icon = if(it.isSelected) Icons.Default.Check else Icons.Default.CheckBoxOutlineBlank
-                                    )
-                                }
-                            }
-                        }
+                        Text(
+                            text = "Clear Selection",
+                            fontFamily = fonts,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 }
             }
         },
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.background,
     )
 }

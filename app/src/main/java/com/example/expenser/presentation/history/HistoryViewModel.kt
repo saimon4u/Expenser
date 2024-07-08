@@ -3,9 +3,11 @@ package com.example.expenser.presentation.history
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.expenser.domain.model.Category
 import com.example.expenser.domain.repository.Repository
 import com.example.expenser.presentation.sign_in.GoogleAuthClient
 import com.example.expenser.util.Resource
+import com.example.expenser.util.SortFilterItem
 import com.example.expenser.util.TransactionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -94,4 +96,48 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
+    fun updateSortList(list: List<SortFilterItem>, categories: List<Category>){
+        _historyState.update { state ->
+            state.copy(
+                sortList = categories.map {
+                    SortFilterItem(
+                        name = it.name,
+                        type = "category",
+                        isSelected = historyState.value.sortList.find { item -> item.name == it.name }?.isSelected ?: false
+                    )
+                } + listOf(TransactionType.Income, TransactionType.Expense).map {type ->
+                    SortFilterItem(
+                        name = type.type,
+                        type = "transaction_type",
+                        isSelected = historyState.value.sortList.find { item-> item.name == type.type }?.isSelected ?: false
+                    )
+                }
+            )
+        }
+    }
+
+    fun onSortItemClick(item: SortFilterItem){
+        _historyState.update {
+            it.copy(
+                sortList = it.sortList.map {sortFilterItem ->
+                    if(sortFilterItem.name == item.name) item
+                    else sortFilterItem
+                }
+            )
+        }
+    }
+
+    fun onClearSelection(type: String){
+        _historyState.update {
+            it.copy(
+                sortList = it.sortList.map {item->
+                    if(item.type == type){
+                        item.copy(
+                            isSelected = false
+                        )
+                    }else item
+                }
+            )
+        }
+    }
 }

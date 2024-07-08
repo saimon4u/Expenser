@@ -42,9 +42,8 @@ fun TransactionByCategoryBox(
     moneyIcon: String? = null
 ){
 
-    var count by remember {
-        mutableIntStateOf(0)
-    }
+    var count = 0
+
 
     Column(
         modifier = modifier
@@ -72,7 +71,7 @@ fun TransactionByCategoryBox(
 
         Spacer(modifier = Modifier.height(10.dp))
         
-        if(categoryList.isEmpty() || count == 0){
+        if(categoryList.isEmpty()){
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -88,12 +87,10 @@ fun TransactionByCategoryBox(
 
         LazyColumn(
             modifier = Modifier.padding(horizontal = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(categoryList){
-                var p = ((getAmount(it))/totalAmount)
-                if(p.isNaN()) p = 0.0
-                if(p != 0.0) {
+                val p = ((getAmount(it))/totalAmount)
+                if(!p.isNaN() && p  != 0.0) {
                     count += 1
                     TransactionByCategoryItem(
                         categoryTitle = it.name,
@@ -103,6 +100,7 @@ fun TransactionByCategoryBox(
                         progress = p.toFloat(),
                         moneyIcon = moneyIcon,
                     )
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
 

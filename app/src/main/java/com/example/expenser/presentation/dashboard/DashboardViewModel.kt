@@ -86,6 +86,7 @@ class DashboardViewModel @Inject constructor(
             repository.getCategoryListByType(userId, type).collectLatest{ result->
                 when(result){
                     is Resource.Error -> {
+                        debug(type.type)
                         _dashboardState.update {
                             it.copy(
                                 showSnackbar = true,
@@ -103,6 +104,7 @@ class DashboardViewModel @Inject constructor(
                         }
                     }
                     is Resource.Success -> {
+                        debug(type.type)
                         _dashboardState.update {
                             if(type == TransactionType.Expense)
                                 it.copy(
