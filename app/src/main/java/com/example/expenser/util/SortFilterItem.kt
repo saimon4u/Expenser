@@ -4,4 +4,5 @@ data class SortFilterItem(
     val name: String = "",
     val type: String = "",
     var isSelected: Boolean = false,
+    val icon: String? = null
 )

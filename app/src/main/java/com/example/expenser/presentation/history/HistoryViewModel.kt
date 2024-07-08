@@ -4,11 +4,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expenser.domain.model.Category
+import com.example.expenser.domain.model.Transaction
 import com.example.expenser.domain.repository.Repository
 import com.example.expenser.presentation.sign_in.GoogleAuthClient
 import com.example.expenser.util.Resource
 import com.example.expenser.util.SortFilterItem
 import com.example.expenser.util.TransactionType
+import com.example.expenser.util.debug
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -102,6 +104,7 @@ class HistoryViewModel @Inject constructor(
                 sortList = categories.map {
                     SortFilterItem(
                         name = it.name,
+                        icon = it.categoryIcon,
                         type = "category",
                         isSelected = historyState.value.sortList.find { item -> item.name == it.name }?.isSelected ?: false
                     )
@@ -138,6 +141,90 @@ class HistoryViewModel @Inject constructor(
                     }else item
                 }
             )
+        }
+    }
+
+    fun getUserSettings(userId: String){
+        viewModelScope.launch {
+            repository.getUserSettings(userId).collectLatest {result->
+                when(result){
+                    is Resource.Error -> {
+                        debug("Error Fetching User Settings")
+                    }
+                    is Resource.Loading -> {
+                        _historyState.update {
+                            it.copy(
+                                isLoading = result.isLoading
+                            )
+                        }
+                    }
+                    is Resource.Success -> {
+                        _historyState.update {
+                            it.copy(
+                                userSettings = result.data
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun onTransactionDelete(userId: String, transaction: Transaction){
+        viewModelScope.launch {
+            repository.deleteTransaction(userId, transaction)
+            _historyState.update {
+                it.copy(
+                    transactionList = it.transactionList.filter { item-> transaction.transactionId != item.transactionId }
+                )
+            }
+            showSnackbar("Transaction Deleted")
+        }
+    }
+
+    fun showSnackbar(message: String){
+        _historyState.update {
+            it.copy(
+                showSnackbar = true,
+                snackbarMessage = message
+            )
+        }
+    }
+
+    fun updateSnackbarState(){
+        _historyState.update {
+            it.copy(
+                showSnackbar = false,
+            )
+        }
+    }
+
+    fun filterList(selectedTypes: List<SortFilterItem>, selectedCategory: List<SortFilterItem>){
+        _historyState.update {
+            if(selectedTypes.isEmpty() && selectedCategory.isEmpty()){
+                it.copy(
+                    filteredList = historyState.value.transactionList
+                )
+            }else if(selectedCategory.isEmpty()){
+                it.copy(
+                    filteredList = historyState.value.transactionList.filter {transaction->
+                        selectedTypes.map { sort -> sort.name }.contains(transaction.type)
+                    },
+                )
+            }else if(selectedTypes.isEmpty()){
+                it.copy(
+                    filteredList = historyState.value.transactionList.filter {transaction->
+                                selectedCategory.map { sort -> sort.name }.contains(transaction.category)
+                    },
+                )
+            }else{
+                it.copy(
+                    filteredList = historyState.value.transactionList.filter {transaction->
+                        selectedTypes.map { sort -> sort.name }.contains(transaction.type) &&
+                                selectedCategory.map { sort -> sort.name }.contains(transaction.category)
+                    },
+                )
+            }
         }
     }
 }

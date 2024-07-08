@@ -70,8 +70,8 @@ class RepositoryImpl @Inject constructor(
                 .document(userId)
                 .collection(TransactionType.Income.type)
                 .whereGreaterThanOrEqualTo("date", startDate)
-                .whereLessThanOrEqualTo("date", endDate + 500L)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .whereLessThanOrEqualTo("date", endDate)
+                .orderBy("date", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener {
                     for (document in it) {
@@ -87,8 +87,8 @@ class RepositoryImpl @Inject constructor(
                 .document(userId)
                 .collection(TransactionType.Expense.type)
                 .whereGreaterThanOrEqualTo("date", startDate)
-                .whereLessThanOrEqualTo("date", endDate + 500L)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .whereLessThanOrEqualTo("date", endDate)
+                .orderBy("date", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener {
                     for (document in it) {
@@ -146,6 +146,12 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun deleteCategory(userId: String, category: Category) {
         database.collection(DatabasePath.Category.path).document(userId).collection(category.type).document(category.categoryId)
+            .delete()
+            .await()
+    }
+
+    override suspend fun deleteTransaction(userId: String, transaction: Transaction) {
+        database.collection(DatabasePath.Transaction.path).document(userId).collection(transaction.type).document(transaction.transactionId)
             .delete()
             .await()
     }

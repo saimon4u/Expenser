@@ -123,7 +123,7 @@ fun SortBottomSheet(
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                     ) {
                         Text(
-                            text = "Clear Selection",
+                            text = "Filter",
                             fontFamily = fonts,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,

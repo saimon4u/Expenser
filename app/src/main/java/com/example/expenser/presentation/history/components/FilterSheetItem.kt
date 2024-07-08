@@ -22,7 +22,7 @@ import com.example.expenser.util.debug
 @Composable
 fun FilterSheetItem(
     item: SortFilterItem,
-    onClick: (SortFilterItem) -> Unit
+    onClick: (SortFilterItem) -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
@@ -30,7 +30,6 @@ fun FilterSheetItem(
         Checkbox(
             checked = item.isSelected,
             onCheckedChange = {
-                debug("$it ${item.name} ${item.isSelected}")
                 onClick(
                     item.copy(
                         isSelected = it
@@ -39,6 +38,16 @@ fun FilterSheetItem(
             }
         )
         Spacer(modifier = Modifier.width(8.dp))
+        if(item.icon != null){
+            Text(
+                text = item.icon,
+                fontFamily = fonts,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.width(5.dp))
+        }
         Text(
             text = item.name,
             fontFamily = fonts,

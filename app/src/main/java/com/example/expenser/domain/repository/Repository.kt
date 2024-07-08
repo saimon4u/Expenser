@@ -17,4 +17,5 @@ interface Repository {
     suspend fun updateUserSettings(userId: String, currency: Currency)
     suspend fun getUserSettings(userId: String): Flow<Resource<UserSettings>>
     suspend fun deleteCategory(userId: String, category: Category)
+    suspend fun deleteTransaction(userId: String, transaction: Transaction)
 }
